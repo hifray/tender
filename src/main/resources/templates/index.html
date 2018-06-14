@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Tender</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" th:href="@{/assets/element-ui/index.css}">
+	<link rel="icon" th:href="@{/assets/element-ui/fonts/element-icons.ttf}">
+	<script th:src="@{/js/axios.js}"></script>
+	<script th:src="@{/js/moment-with-locales.js}"></script>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/assets/vue-2.5.16/vue.js}"></script>
+	<script th:src="@{/assets/element-ui/index.js}"></script>
+</head>
+<style>
+	.el-select .el-input {
+		width: 130px;
+	}
+	.el-table .even-row {
+		background: #E5F1ED;
+	}
+	.el-table .odd-row {
+		background: #F9F9F9;
+	}
+	.input-with-select .el-input-group__prepend {
+		background-color: #fff;
+	}
+	.inline-input {
+		width: 500px;
+	}
+	.el-table .header-cell {
+		background: #4FA9A0;
+		color: white;
+	}
+</style>
+
+<body>
+<div id="tender">
+<el-container>
+	<el-header>
+		<div style="margin-top: 15px">
+			<el-autocomplete
+					v-model="searchConditions.searchContent"
+					:placeholder="searchConditions.contentHint"
+					select-when-unmatched class="inline-input"
+					:fetch-suggestions="searchRemote">
+				<el-select
+						ref="selectSearchCondition"
+						slot="prepend"
+						v-model="searchConditions.searchCondition"
+						:placeholder="searchConditions.conditionHint"
+						clearable
+						@change="changeSearchCondition">
+					<el-option v-for="item in searchConditions.options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+				</el-select>
+			</el-autocomplete>
+			<el-tooltip content="数据获取时间" placement="top" effect="light">
+			<el-date-picker
+					v-model="datePicker.dateRange"
+					:format="datePicker.format"
+					:value-format="datePicker.valueFormat"
+					type="daterange"
+					align="center"
+					unlink-panels
+					:range-separator="datePicker.rangeSeparator"
+					:start-placeholder="datePicker.startDateHint"
+					:end-placeholder="datePicker.endDateHint"
+					:picker-options="datePicker.options">
+			</el-date-picker>
+			</el-tooltip>
+			<el-button type="primary" icon="el-icon-search" :loading="loading" @click="clickSearchButton" style="margin-left: 10px">搜索项目</el-button>
+			<el-button type="danger" icon="el-icon-delete" @click="clickClearSearchButton">清空条件</el-button>
+			<el-tooltip content="导出到Excel" placement="top" effect="light">
+				<el-button type="primary" icon="el-icon-document" circle @click="clickExportExcelButton" style="float: right"></el-button>
+			</el-tooltip>
+			<el-tooltip content="清除已选项" placement="top" effect="light">
+				<el-button type="danger" icon="el-icon-delete" circle @click="clickClearSelectedButton" :disabled="clearSelectedButtonDisabled" style="float: right"></el-button>
+			</el-tooltip>
+			<el-dialog title="已选项目" center width="30%" :visible.sync="selectedDialog.visible">
+				<el-table row-key="projectId" border stripe :data="selectedDialog.data" max-height="500">
+					<el-table-column label="序号" align="center" min-width="40">
+						<template slot-scope="scope">
+							<div>{{ scope.$index + 1 }}</div>
+						</template>
+					</el-table-column>
+					<el-table-column prop="reportName" label="报建名称" align="center" min-width="250" show-overflow-tooltip></el-table-column>
+					<el-table-column label="操作" align="center">
+						<template slot-scope="scope">
+							<el-button type="danger" mini @click="clickRemoveSelectedButton(scope.$index, scope.row)">移除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+				<span slot="footer" class="dialog-footer">
+			    <el-button @click="clickCancelExportExcelButton">取 消</el-button>
+					<el-badge :value="selectedDialog.count">
+						<el-button type="primary" @click="clickConfirmExportExcelButton" style="margin-left: 20px">确 定</el-button>
+					</el-badge>
+		    </span>
+			</el-dialog>
+		</div>
+	</el-header>
+	<el-main>
+		<el-card shadow="hover" :body-style="projectTableBodyStyle">
+			<el-table
+				ref="projectTable"
+				:data="projectTableData"
+				:row-class-name="tableRowClassName"
+				v-loading="loading"
+				row-key="projectId"
+				@sort-change="getListSorted"
+				@selection-change="getListSelected"
+				@row-dblclick="rowDoubleClick"
+				style="width: 100%"
+				header-cell-class-name="header-cell">
+			<!-- 序号 -->
+			<el-table-column label="序号" align="center" fixed="left" >
+				<template slot-scope="scope">
+					<div>{{ scope.$index + 1 }}</div>
+				</template>
+			</el-table-column>
+			<!-- 报建名称 -->
+			<el-table-column prop="reportName" label="报建名称" min-width="250" align="center" show-overflow-tooltip fixed>
+			</el-table-column>
+			<!-- 公告状态 -->
+			<el-table-column label="公告状态" min-width="150" align="center" :formatter="announcementStatusFormatter" :filters="announcementStatusFilters" :filter-method="announcementStatusFilterMethod" filter-placement="bottom-end" fixed>
+			</el-table-column>
+			<!-- 公告发布时间 -->
+			<el-table-column prop="announcementReleaseTime" label="公告发布时间" min-width="220" align="center"  :formatter="announcementReleaseTimeFormatter" sortable="custom" show-overflow-tooltip fixed>
+			</el-table-column>
+			<!-- 报名截止时间 -->
+			<el-table-column prop="tenderDeadline" label="报名截止时间" min-width="220" align="center"  :formatter="tenderDeadlineFormatter" sortable="custom" show-overflow-tooltip fixed>
+			</el-table-column>
+			<!-- 招标项目名称 -->
+			<el-table-column prop="tenderProjectName" label="招标项目名称" min-width="250" align="center" show-overflow-tooltip>
+			</el-table-column>
+			<!-- 招标内容说明 -->
+			<el-table-column label="招标内容说明" min-width="400" align="center">
+				<template slot-scope="scope">
+					<el-tooltip trigger="hover" placement="top" content="点击查看详细内容">
+						<el-popover trigger="click" placement="top" width="500" :title="scope.row.reportName" :content="scope.row.tenderProjectDescription">
+							<div slot="reference" style="white-space: nowrap">{{ scope.row.tenderProjectDescription }}</div>
+							</el-popover>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+			<!-- 招标人联系人 -->
+			<el-table-column label="招标人联系人" min-width="150" align="center" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<el-popover trigger="hover" placement="top">
+						<p>姓名: {{ scope.row.tenderContactPerson }}</p>
+						<p>电话: {{ scope.row.tenderContactPersonPhone }}</p>
+						<div slot="reference" class="name-wrapper">
+							<el-tag size="medium">{{ scope.row.tenderContactPerson }}</el-tag>
+						</div>
+					</el-popover>
+				</template>
+			</el-table-column>
+			<!-- 招标人代理联系人 -->
+			<el-table-column label="招标人代理联系人" min-width="150" align="center" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<el-popover trigger="hover" placement="top">
+						<p>姓名: {{ scope.row.tenderProxyContactPerson }}</p>
+						<p>电话: {{ scope.row.tenderProxyContactPersonPhone }}</p>
+						<div slot="reference" class="name-wrapper">
+							<el-tag size="medium" type="warning">{{ scope.row.tenderProxyContactPerson }}</el-tag>
+						</div>
+					</el-popover>
+				</template>
+			</el-table-column>
+			<!-- 报建编号 -->
+			<el-table-column prop="reportNumber" label="报建编号" min-width="200" align="center">
+			</el-table-column>
+			<!-- 招标登记编号 -->
+			<el-table-column prop="tenderRegistrationNumber" label="招标登记编号" min-width="200" align="center" show-overflow-tooltip>
+			</el-table-column>
+			<!-- 备注 -->
+			<el-table-column prop="remark" label="备注" min-width="200" align="center">
+				<template slot-scope="scope">
+					<el-tooltip trigger="hover" placement="top" content="点击查看详细内容">
+						<el-popover trigger="click" placement="top" width="500" :title="scope.row.reportName" :content="scope.row.remark">
+							<div slot="reference" style="white-space: nowrap">{{ scope.row.remark }}</div>
+						</el-popover>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!-- 数据获取时间 -->
+			<el-table-column prop="createTime" label="数据获取时间" min-width="150" align="center" :formatter="timeAgoFormatter" sortable="custom" show-overflow-tooltip fixed="right">
+			</el-table-column>
+			<!-- 多选框 -->
+			<el-table-column type="selection" fixed="right" reserve-selection>
+			</el-table-column>
+		</el-table>
+		</el-card>
+	</el-main>
+	<el-footer align="center">
+		<el-pagination
+				ref="projectTablePagination"
+				@size-change="changePageSize"
+				@current-change="changePageNum"
+				:current-page="pagination.pageNum"
+				:page-sizes="pagination.pageSizes"
+				:page-size="pagination.pageSize"
+				:layout="pagination.layout"
+				:prev-text="pagination.prevText"
+				:next-text="pagination.nextText"
+				:total="pagination.total">
+		</el-pagination>
+	</el-footer>
+</el-container>
+</div>
+</body>
+
+<script type="text/javascript" th:inline="none">
+	let vue = new Vue({
+		el: '#tender',
+		data: {
+			loading: true,
+			projectTableData: null,
+			projectTableBodyStyle: {
+				padding: '0px'
+			},
+			selections: null,
+			clearSelectedButtonDisabled: true,
+			pagination: {
+				pageNum: 1,
+				pageSize: 10,
+				pageSizes: [10, 20, 50, 100],
+				layout: 'total, sizes, prev, pager, next, jumper',
+				prevText: '上一页',
+				nextText: '下一页',
+				total: 0
+			},
+			searchConditions: {
+				options: [
+					{ value: '报建名称', label: '报建名称'},
+					{ value: '报建编号', label: '报建编号'},
+					{ value: '招标项目名称', label: '招标项目名称'},
+					{ value: '招标登记编号', label: '招标登记编号'}
+				],
+				searchCondition: '',
+				searchContent: '',
+				contentHint: '请输入内容',
+				conditionHint: '搜索条件'
+			},
+			announcementStatusFilters: [
+				{ text: '报名中', value: '报名中' },
+				{ text: '已截止', value: '' },
+				{ text: '全部', value: '全部' }
+			],
+			sortConditions: {
+				sortColumn: '',
+				sortOrder: ''
+			},
+			datePicker: {
+				dateRange: '',
+				format: 'yyyy年 MM月dd日',
+				valueFormat: 'yyyy-MM-dd',
+				rangeSeparator: '至',
+				startDateHint: '开始日期',
+				endDateHint: '结束日期',
+				options: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
+			},
+			selectedDialog: {
+				visible: false,
+				data: null,
+				count: 0
+			}
+		},
+		methods: {
+			searchList: function({pageNum, pageSize, searchCondition, searchContent, sortColumn, sortOrder, startDate, endDate}) {
+				vue.loading = true;
+				http.get("/tender/list/search",
+						{
+							pageNum: pageNum,
+							pageSize: pageSize,
+							searchCondition: searchCondition,
+							searchContent: searchContent,
+							sortColumn: sortColumn,
+							sortOrder: sortOrder,
+							startDate: startDate,
+							endDate: endDate
+						},
+						success => {
+							let data = success.data;
+							vue.projectTableData = data.list;
+							vue.pagination.total = data.total;
+							vue.loading = false;
+						}
+				)
+			},
+			searchRemote: function(searchConditionContent, callback) {
+				http.get("/tender/list/remote",
+						{
+							searchCondition: vue.searchConditions.searchCondition,
+							searchContent: searchConditionContent
+						},
+						success => {
+							callback(success.data);
+						}
+				)
+			},
+			getListSorted: function(sortCondition) {
+				vue.sortConditions.sortColumn = sortCondition.prop;
+				vue.sortConditions.sortOrder = sortCondition.order;
+				vue.searchList({
+					pageNum: 1,
+					pageSize: vue.pagination.pageSize,
+					searchCondition: vue.searchConditions.searchCondition,
+					searchContent: vue.searchConditions.searchContent,
+					sortColumn: vue.sortConditions.sortColumn,
+					sortOrder: vue.sortConditions.sortOrder,
+					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
+					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+				});
+			},
+			getListSelected: function(selection) {
+				vue.selections = selection;
+				vue.clearSelectedButtonDisabled = selection.length <= 0;
+				vue.selectedDialog.data = [];
+				for (let item of selection) {
+					vue.selectedDialog.data.push(item);
+				}
+				if (vue.selectedDialog.data !== null) {
+					vue.selectedDialog.count = vue.selectedDialog.data.length;
+				}
+			},
+			rowDoubleClick: function(row, event) {
+				window.open("http://www.jy.whzbtb.com/V2PRTS/TendererNoticeInfoDetail.do?id="+ row.projectId +"");
+			},
+			changePageSize: function(pageSize) {
+				vue.pagination.pageSize = pageSize;
+				vue.pagination.pageNum = 1;
+				vue.searchList({
+					pageNum: vue.pagination.pageNum,
+					pageSize: pageSize,
+					searchCondition: vue.searchConditions.searchCondition,
+					searchContent: vue.searchConditions.searchContent,
+					sortColumn: vue.sortConditions.sortColumn,
+					sortOrder: vue.sortConditions.sortOrder,
+					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
+					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+				});
+			},
+			changePageNum: function(pageNum) {
+				vue.pagination.pageNum = pageNum;
+				vue.searchList({
+					pageNum: pageNum,
+					pageSize: vue.pagination.pageSize,
+					searchCondition: vue.searchConditions.searchCondition,
+					searchContent: vue.searchConditions.searchContent,
+					sortColumn: vue.sortConditions.sortColumn,
+					sortOrder: vue.sortConditions.sortOrder,
+					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
+					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+				});
+			},
+			changeSearchCondition: function(searchCondition) {
+				vue.searchConditions.contentHint = '请输入' + (searchCondition === '' ? "内容" : searchCondition);
+			},
+			clickSearchButton: function() {
+				vue.loading = true;
+				if (vue.searchConditions.searchContent !== '' && vue.searchConditions.searchCondition === '') {
+					this.$message({
+						showClose: true,
+						center: true,
+						message: '请选择搜索条件！',
+						type: 'warning'
+					});
+				}
+				vue.searchList({
+					pageNum: 1,
+					pageSize: vue.pagination.pageSize,
+					searchCondition: vue.searchConditions.searchCondition,
+					searchContent: vue.searchConditions.searchContent,
+					sortColumn: vue.sortConditions.sortColumn,
+					sortOrder: vue.sortConditions.sortOrder,
+					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
+					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+				});
+			},
+			clickClearSearchButton: function() {
+				vue.searchConditions.searchCondition = '';
+				vue.searchConditions.searchContent = '';
+				vue.datePicker.dateRange = null;
+			},
+			clickExportExcelButton: function() {
+				if (vue.selections === null || vue.selections.length === 0) {
+					this.$message({
+						type: 'warning',
+						center: true,
+						message: '请选择要导出的项目'
+					});
+					return;
+				}
+				let projectIds = '';
+				for (let projectDetail of vue.selections) {
+					projectIds += projectDetail.projectId + ',';
+				}
+				http.post("/tender/list/excel",
+						{
+							projectIds: projectIds
+						}
+				);
+				vue.selectedDialog.visible = true;
+			},
+			clickClearSelectedButton: function() {
+				this.$confirm('清除所有已选项目?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.$message({
+						type: 'success',
+						center: true,
+						duration: 2000,
+						message: '已清除'
+					});
+					vue.$refs.projectTable.clearSelection();
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						center: true,
+						duration: 1500,
+						message: '已取消'
+					});
+				});
+			},
+			clickRemoveSelectedButton: function(index, row) {
+				vue.selectedDialog.data.splice(index, 1);
+				if (vue.selectedDialog.data !== null) {
+					vue.selectedDialog.count = vue.selectedDialog.data.length;
+				}
+				vue.selections = vue.selectedDialog.data;
+				vue.$refs.projectTable.toggleRowSelection(row, false);
+				if (vue.selections === null || vue.selections.length === 0) {
+					vue.clearSelectedButtonDisabled = true;
+					vue.selectedDialog.visible = false;
+				}
+			},
+			clickCancelExportExcelButton: function() {
+				vue.selectedDialog.visible = false;
+				this.$message({
+					message: '已取消',
+					type: 'info',
+					center: true,
+					duration: 1500
+				});
+			},
+			clickConfirmExportExcelButton: function() {
+				let projectIds = '';
+				for (let projectDetail of vue.selections) {
+					projectIds += projectDetail.projectId + ',';
+				}
+				vue.selectedDialog.visible = false;
+				// 弹出下载窗口
+				window.location.href = "/tender/list/excel?projectIds="+ projectIds +"";
+
+			},
+			// render
+			tableRowClassName: function({row, rowIndex}) {
+				if (rowIndex % 2 === 1) {
+					return 'even-row';
+				} else {
+					return 'odd-row';
+				}
+			},
+			// formatter
+			tenderDeadlineFormatter: function(row) {
+				let dateTime = row.tenderDeadline;
+				return dateTime === null ? '' : moment(dateTime).format('YYYY年 MM月DD日 HH时mm分');
+			},
+			announcementReleaseTimeFormatter: function(row) {
+				let dateTime = row.announcementReleaseTime;
+				return dateTime === null ? '' : moment(dateTime).format('YYYY年 MM月DD日 HH时mm分');
+			},
+			announcementStatusFormatter: function(row) {
+				let dateTime = row.tenderDeadline;
+				if (dateTime === null) {
+					return '';
+				}
+				let now = moment();
+				if (moment(dateTime).isAfter(now)) {
+					return '公告中';
+				} else {
+					return '已截止';
+				}
+			},
+			timeAgoFormatter: function (row) {
+				let dateTime = row.createTime;
+				moment.locale('zh-cn');
+				return dateTime === null ? '' : moment(dateTime).fromNow();
+			},
+			// filter
+			announcementStatusFilterMethod: function (value, row) {
+
+			}
+		}
+	});
+	vue.searchList({});
+</script>
+</html>

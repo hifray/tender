@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <properties resource="generator.properties"/>
+
+    <!-- 不生成和example查询相关的内容、每张表只生成一个实体类 -->
+    <context id="Mysql" targetRuntime="MyBatis3" defaultModelType="flat">
+
+        <!-- 生成的Java文件的编码 -->
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+        <!-- MYSQL分隔符 -->
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <!-- 数据Model属性对应Column获取插件 -->
+        <plugin type="com.itfsw.mybatis.generator.plugins.ModelColumnPlugin"/>
+        <!-- Example Criteria 增强插件 -->
+        <plugin type="com.itfsw.mybatis.generator.plugins.ExampleEnhancedPlugin"/>
+        <!-- Example 目标包修改插件 -->
+        <plugin type="com.itfsw.mybatis.generator.plugins.ExampleTargetPlugin">
+            <!-- 修改Example类生成到目标包下 -->
+            <property name="targetPackage" value="${javaModelGenerator.example.targetPackage}"/>
+        </plugin>
+
+        <!-- 生成注释 -->
+        <commentGenerator>
+            <!-- 生成注释时去掉时间戳 -->
+            <property name="suppressDate" value="true"/>
+            <!-- 去掉自动生成的注释 -->
+            <property name="suppressAllComments" value="false"/>
+            <!-- 添加数据库的字段注释至实体类 -->
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+
+        <!-- 数据库连接配置 -->
+        <jdbcConnection driverClass="${jdbcConnection.driverClass}"
+                        connectionURL="${jdbcConnection.url}"
+                        userId="${jdbcConnection.username}"
+                        password="${jdbcConnection.password}">
+        </jdbcConnection>
+
+        <!-- 强制使用BigDecimals类 -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- model类配置 -->
+        <javaModelGenerator targetPackage="${javaModelGenerator.targetPackage}" targetProject="${main.targetProject}">
+            <!-- 允许生成子包 -->
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- xml映射文件配置 -->
+        <sqlMapGenerator targetPackage="${sqlMapGenerator.targetPackage}" targetProject="${resources.targetProject}">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- Dao包配置 -->
+        <javaClientGenerator type="${javaClientGenerator.type}" targetPackage="${javaClientGenerator.targetPackage}" targetProject="${main.targetProject}" >
+            <property name="enableSubPackages" value="true"/>
+            <!-- 生成的方法名 -->
+            <property name="methodNameCalculator" value="extended"/>
+            <!-- 基类接口 -->
+            <property name="rootInterface" value="${javaClientGenerator.rootInterface}"/>
+        </javaClientGenerator>
+
+        <!-- 数据表配置 -->
+        <table tableName="tender_project_detail" domainObjectName="ProjectDetail" mapperName="IProjectDetailMapper"
+               enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true"
+               enableSelectByExample="true" selectByExampleQueryId="true" >
+            <!-- 是否使用实际的数据库字段名作为实体类字段名 -->
+            <property name="useActualColumnNames" value="false"/>
+            <!-- 主键设置 -->
+            <!--<generatedKey column="project_id" sqlStatement="MySql" identity="false" />-->
+            <!-- 字段设置 -->
+            <!--<columnOverride column="DATE_FIELD" property="startDate" />-->
+            <!--<columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />-->
+            <!--&lt;!&ndash;映射时忽略的字段&ndash;&gt;-->
+            <!--<ignoreColumn column="FRED" />-->
+        </table>
+
+    </context>
+</generatorConfiguration>

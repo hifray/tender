@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="OFF" monitorInterval="30">
+    <Properties>
+        <!-- 日志文件根目录 -->
+        <Property name="logPath">src/main/resources/log</Property>
+        <!-- 日志输出格式 -->
+        <Property name="filePattern">%d{YYYY-MM-dd HH:mm:ss,SSS} [%p] [%t] %c{3} @%L %msg%n</Property>
+        <Property name="consolePattern">%white{%d{HH:mm:ss,SSS}} %color{[%level] [%t]} %cyan{%c{36} @%L} %msg%n</Property>
+        <!--<Property name="consolePattern">%d{HH:mm:ss,SSS} [%p] [%t] %c{36} @%L %msg%n</Property>-->
+        <!-- 日志文件命名格式 -->
+        <Property name="fileNamePattern.info">${logPath}/%d{yyyy-MM-dd}/info/log-%i.zip</Property>
+        <Property name="fileNamePattern.warn">${logPath}/%d{yyyy-MM-dd}/warn/log-%i.zip</Property>
+        <Property name="fileNamePattern.error">${logPath}/%d{yyyy-MM-dd}/error/log-%i.zip</Property>
+        <!-- 日志文件打包时间间隔、文件大小、文件最大数量 -->
+        <Property name="fileInterval">1</Property>
+        <Property name="fileMaxSize">100 MB</Property>
+        <Property name="fileMaxQuantity">30</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 控制台打印 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <Filters>
+                <!-- 控制台打印日志的级别 -->
+                <ThresholdFilter level="INFO"/>
+            </Filters>
+            <PatternLayout pattern="${consolePattern}"/>
+        </Console>
+
+        <!-- INFO日志输出 -->
+        <RollingFile name="INFO" filename="${logPath}/info.log"
+                     filepattern="${fileNamePattern.info}">
+            <Filters>
+                <!-- 只输出级别为INFO的日志 -->
+                <ThresholdFilter level="INFO"/>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${filePattern}"/>
+            <Policies>
+                <!-- 每天打包日志一次 -->
+                <TimeBasedTriggeringPolicy interval="${fileInterval}" modulate="true"/>
+                <!-- 日志文件满100MB后打包 -->
+                <SizeBasedTriggeringPolicy size="${fileMaxSize}"/>
+            </Policies>
+            <!-- 最多存放30个压缩文件 -->
+            <DefaultRolloverStrategy max="${fileMaxQuantity}"/>
+        </RollingFile>
+
+        <!-- WARN日志输出 -->
+        <RollingFile name="WARN" filename="${logPath}/warn.log"
+                     filepattern="${fileNamePattern.warn}">
+            <Filters>
+                <ThresholdFilter level="WARN"/>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${filePattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="${fileInterval}" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${fileMaxSize}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${fileMaxQuantity}"/>
+        </RollingFile>
+
+        <!-- ERROR日志输出 -->
+        <RollingFile name="ERROR" filename="${logPath}/error.log"
+                     filepattern="${fileNamePattern.error}">
+            <ThresholdFilter level="ERROR"/>
+            <PatternLayout pattern="${filePattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="${fileInterval}" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${fileMaxSize}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${fileMaxQuantity}"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="INFO"/>
+            <AppenderRef ref="WARN"/>
+            <AppenderRef ref="ERROR"/>
+        </Root>
+        <Logger name="org.quartz.core.QuartzScheduler" additivity="false">
+            <AppenderRef ref="INFO"/>
+            <AppenderRef ref="WARN"/>
+            <AppenderRef ref="ERROR"/>
+        </Logger>
+    </Loggers>
+
+</Configuration>
