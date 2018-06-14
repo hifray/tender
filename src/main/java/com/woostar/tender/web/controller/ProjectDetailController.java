@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * @author huangs
@@ -38,21 +39,22 @@ public class ProjectDetailController extends BaseController {
      * @param searchContent 搜索条件内容
      * @param sortColumn 排序项（tenderDeadline/createTime）
      * @param sortOrder 排序规则(asc/desc)
-     * @param startDate 筛选开始日期
-     * @param endDate 筛选结束日期
+     * @param announcementReleaseTime 公告开始时间
+     * @param tenderDeadline 报名截止时间
      * @return 搜索结果分页
      */
     @GetMapping("/list/search")
     @ResponseBody
-    public ServerResponse searchList(@RequestParam(value = "pageNum", defaultValue = "1")int pageNum,
-                                     @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    public ServerResponse searchList(@RequestParam(value = "pageNum", required = false, defaultValue = "1")int pageNum,
+                                     @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
                                      @RequestParam(value = "searchCondition", required = false) String searchCondition,
                                      @RequestParam(value = "searchContent", required = false) String searchContent,
                                      @RequestParam(value = "sortColumn", required = false) String sortColumn,
                                      @RequestParam(value = "sortOrder", required = false) String sortOrder,
-                                     @RequestParam(value = "startDate", required = false) String startDate,
-                                     @RequestParam(value = "endDate", required = false) String endDate) {
-        return iProjectDetailService.searchList(pageNum, pageSize, searchCondition, searchContent, sortColumn, sortOrder, startDate, endDate);
+                                     @RequestParam(value = "announcementReleaseTime", required = false) String announcementReleaseTime,
+                                     @RequestParam(value = "tenderDeadline", required = false) String tenderDeadline,
+                                     @RequestParam(value = "filter", required = false, defaultValue = "0") int filter) {
+        return iProjectDetailService.searchList(pageNum, pageSize, searchCondition, searchContent, sortColumn, sortOrder, announcementReleaseTime, tenderDeadline, filter);
     }
 
     /**

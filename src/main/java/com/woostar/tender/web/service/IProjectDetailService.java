@@ -19,11 +19,12 @@ public interface IProjectDetailService {
      * @param searchContent 搜索条件内容
      * @param sortColumn 排序项
      * @param sortOrder 排序规则
-     * @param startDate 筛选开始日期
-     * @param endDate 筛选结束日期
+     * @param announcementReleaseTime 公告发布时间
+     * @param tenderDeadline 报名结束时间
+     * @param filter 公告状态（报名中、已截止）
      * @return 搜索结果分页
      */
-    ServerResponse searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String startDate, String endDate);
+    ServerResponse searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter);
 
     /**
      * 根据搜索条件显示搜索建议

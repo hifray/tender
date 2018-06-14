@@ -13,7 +13,7 @@
 </head>
 <style>
 	.el-select .el-input {
-		width: 130px;
+		min-width: 130px;
 	}
 	.el-table .even-row {
 		background: #E5F1ED;
@@ -25,11 +25,16 @@
 		background-color: #fff;
 	}
 	.inline-input {
-		width: 500px;
+		min-width: 400px;
 	}
 	.el-table .header-cell {
 		background: #4FA9A0;
 		color: white;
+	}
+	.text-item {
+		color: #8F9297;
+		float: right;
+		line-height: 40px;
 	}
 </style>
 
@@ -37,8 +42,9 @@
 <div id="tender">
 <el-container>
 	<el-header>
-		<div style="margin-top: 15px">
-			<el-autocomplete
+		<el-row style="margin-top: 15px">
+			<el-col :span="6">
+				<el-autocomplete
 					v-model="searchConditions.searchContent"
 					:placeholder="searchConditions.contentHint"
 					select-when-unmatched class="inline-input"
@@ -53,50 +59,81 @@
 					<el-option v-for="item in searchConditions.options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-autocomplete>
-			<el-tooltip content="数据获取时间" placement="top" effect="light">
-			<el-date-picker
-					v-model="datePicker.dateRange"
-					:format="datePicker.format"
-					:value-format="datePicker.valueFormat"
-					type="daterange"
-					align="center"
-					unlink-panels
-					:range-separator="datePicker.rangeSeparator"
-					:start-placeholder="datePicker.startDateHint"
-					:end-placeholder="datePicker.endDateHint"
-					:picker-options="datePicker.options">
-			</el-date-picker>
-			</el-tooltip>
-			<el-button type="primary" icon="el-icon-search" :loading="loading" @click="clickSearchButton" style="margin-left: 10px">搜索项目</el-button>
-			<el-button type="danger" icon="el-icon-delete" @click="clickClearSearchButton">清空条件</el-button>
-			<el-tooltip content="导出到Excel" placement="top" effect="light">
-				<el-button type="primary" icon="el-icon-document" circle @click="clickExportExcelButton" style="float: right"></el-button>
-			</el-tooltip>
-			<el-tooltip content="清除已选项" placement="top" effect="light">
-				<el-button type="danger" icon="el-icon-delete" circle @click="clickClearSelectedButton" :disabled="clearSelectedButtonDisabled" style="float: right"></el-button>
-			</el-tooltip>
-			<el-dialog title="已选项目" center width="30%" :visible.sync="selectedDialog.visible">
-				<el-table row-key="projectId" border stripe :data="selectedDialog.data" max-height="500">
-					<el-table-column label="序号" align="center" min-width="40">
-						<template slot-scope="scope">
-							<div>{{ scope.$index + 1 }}</div>
-						</template>
-					</el-table-column>
-					<el-table-column prop="reportName" label="报建名称" align="center" min-width="250" show-overflow-tooltip></el-table-column>
-					<el-table-column label="操作" align="center">
-						<template slot-scope="scope">
-							<el-button type="danger" mini @click="clickRemoveSelectedButton(scope.$index, scope.row)">移除</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-				<span slot="footer" class="dialog-footer">
+			</el-col>
+			<el-col :span="2">
+				<el-select clearable placeholder="公告状态" v-model="announcementStatus.value">
+					<el-option
+							v-for="item in announcementStatus.options"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value">
+					</el-option>
+				</el-select>
+			</el-col>
+			<el-col :span="2" style="height: 40px">
+				<span class="text-item">公告发布时间：</span>
+			</el-col>
+			<el-col :span="3">
+				<el-date-picker
+						v-model="dateTimePicker.announcementReleaseTime"
+						type="datetime"
+						:value-format="dateTimePicker.valueFormat"
+						placeholder="选择日期时间"
+						align="right"
+						:picker-options="dateTimePicker.options">
+				</el-date-picker>
+			</el-col>
+			<el-col :span="2" style="height: 40px">
+				<span class="text-item">报名截止时间：</span>
+			</el-col>
+			<el-col :span="3">
+				<el-date-picker
+						v-model="dateTimePicker.tenderDeadline"
+						type="datetime"
+						:value-format="dateTimePicker.valueFormat"
+						placeholder="选择日期时间"
+						align="right"
+						:picker-options="dateTimePicker.options">
+				</el-date-picker>
+			</el-col>
+			<el-col :span="2">
+				<el-button type="primary" icon="el-icon-search" :loading="loading" @click="clickSearchButton" style="float: right">搜索项目</el-button>
+			</el-col>
+			<el-col :span="2">
+				<el-button type="danger" icon="el-icon-delete" @click="clickClearSearchButton" style="float: right">清空条件</el-button>
+			</el-col>
+			<el-col :span="1">
+				<el-tooltip content="导出到Excel" placement="top" effect="light">
+					<el-button type="primary" icon="el-icon-document" circle @click="clickExportExcelButton" style="float: right"></el-button>
+				</el-tooltip>
+			</el-col>
+			<el-col :span="1">
+				<el-tooltip content="清除已选项" placement="top" effect="light">
+						<el-button type="danger" icon="el-icon-delete" circle @click="clickClearSelectedButton" :disabled="clearSelectedButtonDisabled" style="float: right"></el-button>
+				</el-tooltip>
+			</el-col>
+		</el-row>
+		<el-dialog title="已选项目" center width="30%" :visible.sync="selectedDialog.visible">
+			<el-table row-key="projectId" border stripe :data="selectedDialog.data" max-height="500">
+				<el-table-column label="序号" align="center" min-width="40">
+					<template slot-scope="scope">
+						<div>{{ scope.$index + 1 }}</div>
+					</template>
+				</el-table-column>
+				<el-table-column prop="reportName" label="报建名称" align="center" min-width="250" show-overflow-tooltip></el-table-column>
+				<el-table-column label="操作" align="center">
+					<template slot-scope="scope">
+						<el-button type="danger" mini @click="clickRemoveSelectedButton(scope.$index, scope.row)">移除</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<span slot="footer" class="dialog-footer">
 			    <el-button @click="clickCancelExportExcelButton">取 消</el-button>
 					<el-badge :value="selectedDialog.count">
 						<el-button type="primary" @click="clickConfirmExportExcelButton" style="margin-left: 20px">确 定</el-button>
 					</el-badge>
 		    </span>
-			</el-dialog>
-		</div>
+		</el-dialog>
 	</el-header>
 	<el-main>
 		<el-card shadow="hover" :body-style="projectTableBodyStyle">
@@ -118,20 +155,15 @@
 				</template>
 			</el-table-column>
 			<!-- 报建名称 -->
-			<el-table-column prop="reportName" label="报建名称" min-width="250" align="center" show-overflow-tooltip fixed>
-			</el-table-column>
+			<el-table-column prop="reportName" label="报建名称" min-width="250" align="center" show-overflow-tooltip fixed></el-table-column>
 			<!-- 公告状态 -->
-			<el-table-column label="公告状态" min-width="150" align="center" :formatter="announcementStatusFormatter" :filters="announcementStatusFilters" :filter-method="announcementStatusFilterMethod" filter-placement="bottom-end" fixed>
-			</el-table-column>
+			<el-table-column prop="announcementReleaseTime" label="公告状态" min-width="150" align="center" :formatter="announcementStatusFormatter" fixed></el-table-column>
 			<!-- 公告发布时间 -->
-			<el-table-column prop="announcementReleaseTime" label="公告发布时间" min-width="220" align="center"  :formatter="announcementReleaseTimeFormatter" sortable="custom" show-overflow-tooltip fixed>
-			</el-table-column>
+			<el-table-column prop="announcementReleaseTime" label="公告发布时间" min-width="220" align="center"  :formatter="announcementReleaseTimeFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
 			<!-- 报名截止时间 -->
-			<el-table-column prop="tenderDeadline" label="报名截止时间" min-width="220" align="center"  :formatter="tenderDeadlineFormatter" sortable="custom" show-overflow-tooltip fixed>
-			</el-table-column>
+			<el-table-column prop="tenderDeadline" label="报名截止时间" min-width="220" align="center"  :formatter="tenderDeadlineFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
 			<!-- 招标项目名称 -->
-			<el-table-column prop="tenderProjectName" label="招标项目名称" min-width="250" align="center" show-overflow-tooltip>
-			</el-table-column>
+			<el-table-column prop="tenderProjectName" label="招标项目名称" min-width="250" align="center" show-overflow-tooltip></el-table-column>
 			<!-- 招标内容说明 -->
 			<el-table-column label="招标内容说明" min-width="400" align="center">
 				<template slot-scope="scope">
@@ -167,11 +199,9 @@
 				</template>
 			</el-table-column>
 			<!-- 报建编号 -->
-			<el-table-column prop="reportNumber" label="报建编号" min-width="200" align="center">
-			</el-table-column>
+			<el-table-column prop="reportNumber" label="报建编号" min-width="200" align="center"></el-table-column>
 			<!-- 招标登记编号 -->
-			<el-table-column prop="tenderRegistrationNumber" label="招标登记编号" min-width="200" align="center" show-overflow-tooltip>
-			</el-table-column>
+			<el-table-column prop="tenderRegistrationNumber" label="招标登记编号" min-width="200" align="center" show-overflow-tooltip></el-table-column>
 			<!-- 备注 -->
 			<el-table-column prop="remark" label="备注" min-width="200" align="center">
 				<template slot-scope="scope">
@@ -183,11 +213,9 @@
 				</template>
 			</el-table-column>
 			<!-- 数据获取时间 -->
-			<el-table-column prop="createTime" label="数据获取时间" min-width="150" align="center" :formatter="timeAgoFormatter" sortable="custom" show-overflow-tooltip fixed="right">
-			</el-table-column>
+			<el-table-column prop="createTime" label="数据获取时间" min-width="150" align="center" :formatter="timeAgoFormatter" sortable="custom" show-overflow-tooltip fixed="right"></el-table-column>
 			<!-- 多选框 -->
-			<el-table-column type="selection" fixed="right" reserve-selection>
-			</el-table-column>
+			<el-table-column type="selection" fixed="right" reserve-selection></el-table-column>
 		</el-table>
 		</el-card>
 	</el-main>
@@ -229,6 +257,13 @@
 				nextText: '下一页',
 				total: 0
 			},
+			announcementStatus: {
+				value: null,
+				options: [
+					{ value: 1, label: '报名中' },
+					{ value: 2, label: '已截止' }
+				]
+			},
 			searchConditions: {
 				options: [
 					{ value: '报建名称', label: '报建名称'},
@@ -241,46 +276,33 @@
 				contentHint: '请输入内容',
 				conditionHint: '搜索条件'
 			},
-			announcementStatusFilters: [
-				{ text: '报名中', value: '报名中' },
-				{ text: '已截止', value: '' },
-				{ text: '全部', value: '全部' }
-			],
 			sortConditions: {
 				sortColumn: '',
 				sortOrder: ''
 			},
-			datePicker: {
-				dateRange: '',
-				format: 'yyyy年 MM月dd日',
-				valueFormat: 'yyyy-MM-dd',
-				rangeSeparator: '至',
-				startDateHint: '开始日期',
-				endDateHint: '结束日期',
+			dateTimePicker: {
+				announcementReleaseTime: '',
+				tenderDeadline: '',
+				valueFormat: 'yyyy-MM-dd HH:mm:ss',
 				options: {
 					shortcuts: [{
-						text: '最近一周',
+						text: '今天',
 						onClick(picker) {
-							const end = new Date();
-							const start = new Date();
-							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-							picker.$emit('pick', [start, end]);
+							picker.$emit('pick', new Date());
 						}
 					}, {
-						text: '最近一个月',
+						text: '昨天',
 						onClick(picker) {
-							const end = new Date();
-							const start = new Date();
-							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-							picker.$emit('pick', [start, end]);
+							const date = new Date();
+							date.setTime(date.getTime() - 3600 * 1000 * 24);
+							picker.$emit('pick', date);
 						}
 					}, {
-						text: '最近三个月',
+						text: '一周前',
 						onClick(picker) {
-							const end = new Date();
-							const start = new Date();
-							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-							picker.$emit('pick', [start, end]);
+							const date = new Date();
+							date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', date);
 						}
 					}]
 				},
@@ -292,7 +314,7 @@
 			}
 		},
 		methods: {
-			searchList: function({pageNum, pageSize, searchCondition, searchContent, sortColumn, sortOrder, startDate, endDate}) {
+			searchList: function({pageNum, pageSize, searchCondition, searchContent, sortColumn, sortOrder, announcementReleaseTime, tenderDeadline, filter}) {
 				vue.loading = true;
 				http.get("/tender/list/search",
 						{
@@ -302,8 +324,9 @@
 							searchContent: searchContent,
 							sortColumn: sortColumn,
 							sortOrder: sortOrder,
-							startDate: startDate,
-							endDate: endDate
+							announcementReleaseTime: announcementReleaseTime,
+							tenderDeadline: tenderDeadline,
+							filter: vue.announcementStatus.value
 						},
 						success => {
 							let data = success.data;
@@ -334,8 +357,9 @@
 					searchContent: vue.searchConditions.searchContent,
 					sortColumn: vue.sortConditions.sortColumn,
 					sortOrder: vue.sortConditions.sortOrder,
-					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
-					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
+					tenderDeadline: vue.dateTimePicker.tenderDeadline,
+					filter: vue.announcementStatus.value
 				});
 			},
 			getListSelected: function(selection) {
@@ -362,8 +386,9 @@
 					searchContent: vue.searchConditions.searchContent,
 					sortColumn: vue.sortConditions.sortColumn,
 					sortOrder: vue.sortConditions.sortOrder,
-					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
-					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
+					tenderDeadline: vue.dateTimePicker.tenderDeadline,
+					filter: vue.announcementStatus.value
 				});
 			},
 			changePageNum: function(pageNum) {
@@ -375,15 +400,15 @@
 					searchContent: vue.searchConditions.searchContent,
 					sortColumn: vue.sortConditions.sortColumn,
 					sortOrder: vue.sortConditions.sortOrder,
-					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
-					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
+					tenderDeadline: vue.dateTimePicker.tenderDeadline,
+					filter: vue.announcementStatus.value
 				});
 			},
 			changeSearchCondition: function(searchCondition) {
 				vue.searchConditions.contentHint = '请输入' + (searchCondition === '' ? "内容" : searchCondition);
 			},
 			clickSearchButton: function() {
-				vue.loading = true;
 				if (vue.searchConditions.searchContent !== '' && vue.searchConditions.searchCondition === '') {
 					this.$message({
 						showClose: true,
@@ -399,14 +424,18 @@
 					searchContent: vue.searchConditions.searchContent,
 					sortColumn: vue.sortConditions.sortColumn,
 					sortOrder: vue.sortConditions.sortOrder,
-					startDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[0],
-					endDate: vue.datePicker.dateRange === null ? null : vue.datePicker.dateRange[1]
+					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
+					tenderDeadline: vue.dateTimePicker.tenderDeadline,
+					filter: vue.announcementStatus.value
 				});
 			},
 			clickClearSearchButton: function() {
 				vue.searchConditions.searchCondition = '';
 				vue.searchConditions.searchContent = '';
-				vue.datePicker.dateRange = null;
+				vue.dateTimePicker.announcementReleaseTime = '';
+				vue.dateTimePicker.tenderDeadline = '';
+				vue.announcementStatus.value = null;
+				vue.$refs.projectTable.clearSort();
 			},
 			clickExportExcelButton: function() {
 				if (vue.selections === null || vue.selections.length === 0) {
@@ -500,12 +529,12 @@
 			},
 			announcementStatusFormatter: function(row) {
 				let dateTime = row.tenderDeadline;
+				let now = moment();
 				if (dateTime === null) {
 					return '';
 				}
-				let now = moment();
 				if (moment(dateTime).isAfter(now)) {
-					return '公告中';
+					return '报名中';
 				} else {
 					return '已截止';
 				}
@@ -514,10 +543,6 @@
 				let dateTime = row.createTime;
 				moment.locale('zh-cn');
 				return dateTime === null ? '' : moment(dateTime).fromNow();
-			},
-			// filter
-			announcementStatusFilterMethod: function (value, row) {
-
 			}
 		}
 	});

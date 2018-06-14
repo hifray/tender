@@ -43,32 +43,37 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     }
 
     @Override
-    public ServerResponse searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String startDate, String endDate) {
+    public ServerResponse searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter) {
         ProjectDetailExample sqlExample = new ProjectDetailExample();
+        ProjectDetailExample.Criteria criteria = sqlExample.createCriteria();
         // 条件搜索
         if (StringUtils.isNotEmpty(searchCondition) && StringUtils.isNotEmpty(searchContent)) {
             switch (searchCondition) {
                 case "报建名称":
-                    sqlExample.createCriteria().andReportNameLike('%'+ searchContent +'%');
+                    criteria.andReportNameLike('%'+ searchContent +'%');
                     break;
                 case "报建编号":
-                    sqlExample.createCriteria().andReportNumberLike('%'+ searchContent +'%');
+                    criteria.andReportNumberLike('%'+ searchContent +'%');
                     break;
                 case "招标项目名称":
-                    sqlExample.createCriteria().andTenderProjectNameLike('%'+ searchContent +'%');
+                    criteria.andTenderProjectNameLike('%'+ searchContent +'%');
                     break;
                 case "招标登记编号":
-                    sqlExample.createCriteria().andTenderRegistrationNumberLike('%'+ searchContent +'%');
+                    criteria.andTenderRegistrationNumberLike('%'+ searchContent +'%');
                     break;
                 default:
                     // 表示无数据
-                    sqlExample.createCriteria().andProjectIdIsNull();
+                    criteria.andProjectIdIsNull();
                     break;
             }
         }
-        // 日期筛选
-        if (startDate != null && endDate != null) {
-            sqlExample.createCriteria().andCreateTimeBetween(DateTimeUtil.stringToDate(startDate, "yyyy-MM-dd"), DateTimeUtil.stringToDate(endDate, "yyyy-MM-dd"));
+        // 公告发布时间
+        if (StringUtils.isNotEmpty(announcementReleaseTime)) {
+            criteria.andAnnouncementReleaseTimeLessThan(DateTimeUtil.stringToDate(announcementReleaseTime, DateTimeUtil.DEFAULT_FORMAT));
+        }
+        // 报名截止时间
+        if (StringUtils.isNotEmpty(tenderDeadline)) {
+            criteria.andTenderDeadlineLessThan(DateTimeUtil.stringToDate(tenderDeadline, DateTimeUtil.DEFAULT_FORMAT));
         }
         // 搜索结果排序
         if (StringUtils.isNotEmpty(sortColumn) && StringUtils.isNotEmpty(sortOrder)) {
@@ -78,6 +83,14 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
             if (StringUtils.equals(sortOrder, "ascending")) {
                 sqlExample.orderBy(ProjectDetail.Column.valueOf(sortColumn).asc());
             }
+        }
+        // 报名中
+        if (filter == 1) {
+            criteria.andTenderDeadlineGreaterThan(new Date());
+        }
+        // 已截止
+        if (filter == 2) {
+            criteria.andTenderDeadlineLessThan(new Date());
         }
         PageHelper.startPage(pageNum, pageSize);
         List<ProjectDetail> projectDetailList = iProjectDetailMapper.selectByExample(sqlExample);
