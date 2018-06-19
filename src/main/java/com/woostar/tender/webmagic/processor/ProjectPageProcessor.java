@@ -23,16 +23,6 @@ public class ProjectPageProcessor extends BaseProcessor {
     public static final String DETAIL_URL_PARAMETER = "page=1&rows=150";
 
     /**
-     * 网站相关配置
-     */
-    private Site site = Site.me()
-            .setCharset("UTF-8")
-            .setSleepTime(3000)
-            .setRetryTimes(5)
-            .setTimeOut(10000)
-            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36");
-
-    /**
      * 目标链接
      */
     private static final String DETAIL_URL = "http://www.jy.whzbtb.com/V2PRTS/TendererNoticeInfoDetail.do?id=";
