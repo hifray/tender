@@ -1,0 +1,49 @@
+      # 开发环境配置文件
+      # 服务器配置
+      server:
+        port: 8080
+
+      spring:
+        # 数据库配置
+        datasource:
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/tender?characterEncoding=UTF-8&useSSL=false&serverTimezone=Hongkong
+          username: hifray
+          password: hs@19931028
+          type: com.alibaba.druid.pool.DruidDataSource
+          filters: stat
+          initialSize: 5
+          minIdle: 5
+          maxActive: 20
+          maxWait: 60000
+          timeBetweenEvictionRunsMillis: 60000
+          minEvictableIdleTimeMillis: 300000
+          validationQuery: SELECT 1 FROM DUAL
+          testWhileIdle: true
+          testOnBorrow: false
+          testOnReturn: false
+          poolPreparedStatements: true
+          maxPoolPreparedStatementPerConnectionSize: 20
+          maxOpenPreparedStatements: 20
+        # redis配置
+        redis:
+          host: localhost
+          port: 6379
+
+        # thymeleaf配置
+        thymeleaf:
+          cache: false
+
+      # mybatis配置
+      mybatis:
+        # xml映射文件路径
+        mapper-locations: classpath:mapper/*.xml
+        # model类路径
+        type-aliases-package: com.woostar.tender.model
+
+      # pageHelper配置
+      pagehelper:
+        helper-dialect: mysql
+        reasonable: true
+        support-methods-arguments: true
+        params: count=countSql

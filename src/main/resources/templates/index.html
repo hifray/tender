@@ -40,200 +40,200 @@
 
 <body>
 <div id="tender">
-<el-container>
-	<el-header>
-		<el-row style="margin-top: 15px">
-			<el-col :span="6">
-				<el-autocomplete
-					v-model="searchConditions.searchContent"
-					:placeholder="searchConditions.contentHint"
-					select-when-unmatched class="inline-input"
-					:fetch-suggestions="searchRemote">
-				<el-select
-						ref="selectSearchCondition"
-						slot="prepend"
-						v-model="searchConditions.searchCondition"
-						:placeholder="searchConditions.conditionHint"
-						clearable
-						@change="changeSearchCondition">
-					<el-option v-for="item in searchConditions.options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-				</el-select>
-			</el-autocomplete>
-			</el-col>
-			<el-col :span="2">
-				<el-select clearable placeholder="公告状态" v-model="announcementStatus.value">
-					<el-option
-							v-for="item in announcementStatus.options"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value">
-					</el-option>
-				</el-select>
-			</el-col>
-			<el-col :span="2" style="height: 40px">
-				<span class="text-item">公告发布时间：</span>
-			</el-col>
-			<el-col :span="3">
-				<el-date-picker
-						v-model="dateTimePicker.announcementReleaseTime"
-						type="datetime"
-						:value-format="dateTimePicker.valueFormat"
-						placeholder="选择日期时间"
-						align="right"
-						:picker-options="dateTimePicker.options">
-				</el-date-picker>
-			</el-col>
-			<el-col :span="2" style="height: 40px">
-				<span class="text-item">报名截止时间：</span>
-			</el-col>
-			<el-col :span="3">
-				<el-date-picker
-						v-model="dateTimePicker.tenderDeadline"
-						type="datetime"
-						:value-format="dateTimePicker.valueFormat"
-						placeholder="选择日期时间"
-						align="right"
-						:picker-options="dateTimePicker.options">
-				</el-date-picker>
-			</el-col>
-			<el-col :span="2">
-				<el-button type="primary" icon="el-icon-search" :loading="loading" @click="clickSearchButton" style="float: right">搜索项目</el-button>
-			</el-col>
-			<el-col :span="2">
-				<el-button type="danger" icon="el-icon-delete" @click="clickClearSearchButton" style="float: right">清空条件</el-button>
-			</el-col>
-			<el-col :span="1">
-				<el-tooltip content="导出到Excel" placement="top" effect="light">
-					<el-button type="primary" icon="el-icon-document" circle @click="clickExportExcelButton" style="float: right"></el-button>
-				</el-tooltip>
-			</el-col>
-			<el-col :span="1">
-				<el-tooltip content="清除已选项" placement="top" effect="light">
+	<el-container>
+		<el-header>
+			<el-row style="margin-top: 15px">
+				<el-col :span="6">
+					<el-autocomplete
+							v-model="searchConditions.searchContent"
+							:placeholder="searchConditions.contentHint"
+							select-when-unmatched class="inline-input"
+							:fetch-suggestions="searchRemote">
+						<el-select
+								ref="selectSearchCondition"
+								slot="prepend"
+								v-model="searchConditions.searchCondition"
+								:placeholder="searchConditions.conditionHint"
+								clearable
+								@change="changeSearchCondition">
+							<el-option v-for="item in searchConditions.options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+						</el-select>
+					</el-autocomplete>
+				</el-col>
+				<el-col :span="2">
+					<el-select clearable placeholder="公告状态" v-model="announcementStatus.value">
+						<el-option
+								v-for="item in announcementStatus.options"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+						</el-option>
+					</el-select>
+				</el-col>
+				<el-col :span="2" style="height: 40px">
+					<span class="text-item">公告发布时间：</span>
+				</el-col>
+				<el-col :span="3">
+					<el-date-picker
+							v-model="dateTimePicker.announcementReleaseTime"
+							type="datetime"
+							:value-format="dateTimePicker.valueFormat"
+							placeholder="选择日期时间"
+							align="right"
+							:picker-options="dateTimePicker.options">
+					</el-date-picker>
+				</el-col>
+				<el-col :span="2" style="height: 40px">
+					<span class="text-item">报名截止时间：</span>
+				</el-col>
+				<el-col :span="3">
+					<el-date-picker
+							v-model="dateTimePicker.tenderDeadline"
+							type="datetime"
+							:value-format="dateTimePicker.valueFormat"
+							placeholder="选择日期时间"
+							align="right"
+							:picker-options="dateTimePicker.options">
+					</el-date-picker>
+				</el-col>
+				<el-col :span="2">
+					<el-button type="primary" icon="el-icon-search" :loading="loading" @click="clickSearchButton" style="float: right">搜索项目</el-button>
+				</el-col>
+				<el-col :span="2">
+					<el-button type="danger" icon="el-icon-delete" @click="clickClearSearchButton" style="float: right">清空条件</el-button>
+				</el-col>
+				<el-col :span="1">
+					<el-tooltip content="清除已选项" placement="top" effect="light">
 						<el-button type="danger" icon="el-icon-delete" circle @click="clickClearSelectedButton" :disabled="clearSelectedButtonDisabled" style="float: right"></el-button>
-				</el-tooltip>
-			</el-col>
-		</el-row>
-		<el-dialog title="已选项目" center width="30%" :visible.sync="selectedDialog.visible">
-			<el-table row-key="projectId" border stripe :data="selectedDialog.data" max-height="500">
-				<el-table-column label="序号" align="center" min-width="40">
-					<template slot-scope="scope">
-						<div>{{ scope.$index + 1 }}</div>
-					</template>
-				</el-table-column>
-				<el-table-column prop="reportName" label="报建名称" align="center" min-width="250" show-overflow-tooltip></el-table-column>
-				<el-table-column label="操作" align="center">
-					<template slot-scope="scope">
-						<el-button type="danger" mini @click="clickRemoveSelectedButton(scope.$index, scope.row)">移除</el-button>
-					</template>
-				</el-table-column>
-			</el-table>
-			<span slot="footer" class="dialog-footer">
+					</el-tooltip>
+				</el-col>
+				<el-col :span="1">
+					<el-tooltip content="导出到Excel" placement="top" effect="light">
+						<el-button type="primary" icon="el-icon-document" circle @click="clickExportExcelButton" style="float: right"></el-button>
+					</el-tooltip>
+				</el-col>
+			</el-row>
+			<el-dialog title="已选项目" center width="30%" :visible.sync="selectedDialog.visible">
+				<el-table row-key="projectId" border stripe :data="selectedDialog.data" max-height="500">
+					<el-table-column label="序号" align="center" min-width="40">
+						<template slot-scope="scope">
+							<div>{{ scope.$index + 1 }}</div>
+						</template>
+					</el-table-column>
+					<el-table-column prop="reportName" label="报建名称" align="center" min-width="250" show-overflow-tooltip></el-table-column>
+					<el-table-column label="操作" align="center">
+						<template slot-scope="scope">
+							<el-button type="danger" mini @click="clickRemoveSelectedButton(scope.$index, scope.row)">移除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+				<span slot="footer" class="dialog-footer">
 			    <el-button @click="clickCancelExportExcelButton">取 消</el-button>
 					<el-badge :value="selectedDialog.count">
 						<el-button type="primary" @click="clickConfirmExportExcelButton" style="margin-left: 20px">确 定</el-button>
 					</el-badge>
 		    </span>
-		</el-dialog>
-	</el-header>
-	<el-main>
-		<el-card shadow="hover" :body-style="projectTableBodyStyle">
-			<el-table
-				ref="projectTable"
-				:data="projectTableData"
-				:row-class-name="tableRowClassName"
-				v-loading="loading"
-				row-key="projectId"
-				@sort-change="getListSorted"
-				@selection-change="getListSelected"
-				@row-dblclick="rowDoubleClick"
-				style="width: 100%"
-				header-cell-class-name="header-cell">
-			<!-- 序号 -->
-			<el-table-column label="序号" align="center" fixed="left" >
-				<template slot-scope="scope">
-					<div>{{ scope.$index + 1 }}</div>
-				</template>
-			</el-table-column>
-			<!-- 报建名称 -->
-			<el-table-column prop="reportName" label="报建名称" min-width="250" align="center" show-overflow-tooltip fixed></el-table-column>
-			<!-- 公告状态 -->
-			<el-table-column prop="announcementReleaseTime" label="公告状态" min-width="150" align="center" :formatter="announcementStatusFormatter" fixed></el-table-column>
-			<!-- 公告发布时间 -->
-			<el-table-column prop="announcementReleaseTime" label="公告发布时间" min-width="220" align="center"  :formatter="announcementReleaseTimeFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
-			<!-- 报名截止时间 -->
-			<el-table-column prop="tenderDeadline" label="报名截止时间" min-width="220" align="center"  :formatter="tenderDeadlineFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
-			<!-- 招标项目名称 -->
-			<el-table-column prop="tenderProjectName" label="招标项目名称" min-width="250" align="center" show-overflow-tooltip></el-table-column>
-			<!-- 招标内容说明 -->
-			<el-table-column label="招标内容说明" min-width="400" align="center">
-				<template slot-scope="scope">
-					<el-tooltip trigger="hover" placement="top" content="点击查看详细内容">
-						<el-popover trigger="click" placement="top" width="500" :title="scope.row.reportName" :content="scope.row.tenderProjectDescription">
-							<div slot="reference" style="white-space: nowrap">{{ scope.row.tenderProjectDescription }}</div>
+			</el-dialog>
+		</el-header>
+		<el-main>
+			<el-card shadow="hover" :body-style="projectTableBodyStyle">
+				<el-table
+						ref="projectTable"
+						:data="projectTableData"
+						:row-class-name="tableRowClassName"
+						v-loading="loading"
+						row-key="projectId"
+						@sort-change="getListSorted"
+						@selection-change="getListSelected"
+						@row-dblclick="rowDoubleClick"
+						style="width: 100%"
+						header-cell-class-name="header-cell">
+					<!-- 序号 -->
+					<el-table-column label="序号" align="center" fixed="left" >
+						<template slot-scope="scope">
+							<div>{{ scope.$index + 1 }}</div>
+						</template>
+					</el-table-column>
+					<!-- 报建名称 -->
+					<el-table-column prop="reportName" label="报建名称" min-width="250" align="center" show-overflow-tooltip fixed></el-table-column>
+					<!-- 公告状态 -->
+					<el-table-column prop="announcementReleaseTime" label="公告状态" min-width="150" align="center" :formatter="announcementStatusFormatter" fixed></el-table-column>
+					<!-- 公告发布时间 -->
+					<el-table-column prop="announcementReleaseTime" label="公告发布时间" min-width="220" align="center"  :formatter="announcementReleaseTimeFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
+					<!-- 报名截止时间 -->
+					<el-table-column prop="tenderDeadline" label="报名截止时间" min-width="220" align="center"  :formatter="tenderDeadlineFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
+					<!-- 招标项目名称 -->
+					<el-table-column prop="tenderProjectName" label="招标项目名称" min-width="250" align="center" show-overflow-tooltip></el-table-column>
+					<!-- 招标内容说明 -->
+					<el-table-column label="招标内容说明" min-width="400" align="center">
+						<template slot-scope="scope">
+							<el-tooltip trigger="hover" placement="top" content="点击查看详细内容">
+								<el-popover trigger="click" placement="top" width="500" :title="scope.row.reportName" :content="scope.row.tenderProjectDescription">
+									<div slot="reference" style="white-space: nowrap">{{ scope.row.tenderProjectDescription }}</div>
+								</el-popover>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<!-- 招标人联系人 -->
+					<el-table-column label="招标人联系人" min-width="150" align="center" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<el-popover trigger="hover" placement="top">
+								<p>姓名: {{ scope.row.tenderContactPerson }}</p>
+								<p>电话: {{ scope.row.tenderContactPersonPhone }}</p>
+								<div slot="reference" class="name-wrapper">
+									<el-tag size="medium">{{ scope.row.tenderContactPerson }}</el-tag>
+								</div>
 							</el-popover>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-			<!-- 招标人联系人 -->
-			<el-table-column label="招标人联系人" min-width="150" align="center" show-overflow-tooltip>
-				<template slot-scope="scope">
-					<el-popover trigger="hover" placement="top">
-						<p>姓名: {{ scope.row.tenderContactPerson }}</p>
-						<p>电话: {{ scope.row.tenderContactPersonPhone }}</p>
-						<div slot="reference" class="name-wrapper">
-							<el-tag size="medium">{{ scope.row.tenderContactPerson }}</el-tag>
-						</div>
-					</el-popover>
-				</template>
-			</el-table-column>
-			<!-- 招标人代理联系人 -->
-			<el-table-column label="招标人代理联系人" min-width="150" align="center" show-overflow-tooltip>
-				<template slot-scope="scope">
-					<el-popover trigger="hover" placement="top">
-						<p>姓名: {{ scope.row.tenderProxyContactPerson }}</p>
-						<p>电话: {{ scope.row.tenderProxyContactPersonPhone }}</p>
-						<div slot="reference" class="name-wrapper">
-							<el-tag size="medium" type="warning">{{ scope.row.tenderProxyContactPerson }}</el-tag>
-						</div>
-					</el-popover>
-				</template>
-			</el-table-column>
-			<!-- 报建编号 -->
-			<el-table-column prop="reportNumber" label="报建编号" min-width="200" align="center"></el-table-column>
-			<!-- 招标登记编号 -->
-			<el-table-column prop="tenderRegistrationNumber" label="招标登记编号" min-width="200" align="center" show-overflow-tooltip></el-table-column>
-			<!-- 备注 -->
-			<el-table-column prop="remark" label="备注" min-width="200" align="center">
-				<template slot-scope="scope">
-					<el-tooltip trigger="hover" placement="top" content="点击查看详细内容">
-						<el-popover trigger="click" placement="top" width="500" :title="scope.row.reportName" :content="scope.row.remark">
-							<div slot="reference" style="white-space: nowrap">{{ scope.row.remark }}</div>
-						</el-popover>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<!-- 数据获取时间 -->
-			<el-table-column prop="createTime" label="数据获取时间" min-width="150" align="center" :formatter="timeAgoFormatter" sortable="custom" show-overflow-tooltip fixed="right"></el-table-column>
-			<!-- 多选框 -->
-			<el-table-column type="selection" fixed="right" reserve-selection></el-table-column>
-		</el-table>
-		</el-card>
-	</el-main>
-	<el-footer align="center">
-		<el-pagination
-				ref="projectTablePagination"
-				@size-change="changePageSize"
-				@current-change="changePageNum"
-				:current-page="pagination.pageNum"
-				:page-sizes="pagination.pageSizes"
-				:page-size="pagination.pageSize"
-				:layout="pagination.layout"
-				:prev-text="pagination.prevText"
-				:next-text="pagination.nextText"
-				:total="pagination.total">
-		</el-pagination>
-	</el-footer>
-</el-container>
+						</template>
+					</el-table-column>
+					<!-- 招标人代理联系人 -->
+					<el-table-column label="招标人代理联系人" min-width="150" align="center" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<el-popover trigger="hover" placement="top">
+								<p>姓名: {{ scope.row.tenderProxyContactPerson }}</p>
+								<p>电话: {{ scope.row.tenderProxyContactPersonPhone }}</p>
+								<div slot="reference" class="name-wrapper">
+									<el-tag size="medium" type="warning">{{ scope.row.tenderProxyContactPerson }}</el-tag>
+								</div>
+							</el-popover>
+						</template>
+					</el-table-column>
+					<!-- 报建编号 -->
+					<el-table-column prop="reportNumber" label="报建编号" min-width="200" align="center"></el-table-column>
+					<!-- 招标登记编号 -->
+					<el-table-column prop="tenderRegistrationNumber" label="招标登记编号" min-width="200" align="center" show-overflow-tooltip></el-table-column>
+					<!-- 备注 -->
+					<el-table-column prop="remark" label="备注" min-width="200" align="center">
+						<template slot-scope="scope">
+							<el-tooltip trigger="hover" placement="top" content="点击查看详细内容">
+								<el-popover trigger="click" placement="top" width="500" :title="scope.row.reportName" :content="scope.row.remark">
+									<div slot="reference" style="white-space: nowrap">{{ scope.row.remark }}</div>
+								</el-popover>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<!-- 数据获取时间 -->
+					<el-table-column prop="createTime" label="数据获取时间" min-width="150" align="center" :formatter="timeAgoFormatter" sortable="custom" show-overflow-tooltip fixed="right"></el-table-column>
+					<!-- 多选框 -->
+					<el-table-column type="selection" fixed="right" reserve-selection></el-table-column>
+				</el-table>
+			</el-card>
+		</el-main>
+		<el-footer align="center">
+			<el-pagination
+					ref="projectTablePagination"
+					@size-change="changePageSize"
+					@current-change="changePageNum"
+					:current-page="pagination.pageNum"
+					:page-sizes="pagination.pageSizes"
+					:page-size="pagination.pageSize"
+					:layout="pagination.layout"
+					:prev-text="pagination.prevText"
+					:next-text="pagination.nextText"
+					:total="pagination.total">
+			</el-pagination>
+		</el-footer>
+	</el-container>
 </div>
 </body>
 
@@ -546,6 +546,9 @@
 			}
 		}
 	});
-	vue.searchList({});
+	vue.searchList({
+		sortOrder: 'descending',
+		sortColumn: 'createTime'
+	});
 </script>
 </html>
