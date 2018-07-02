@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 
 /**
  * @author huangs
@@ -49,8 +48,8 @@ public class ProjectDetailController extends BaseController {
                                      @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
                                      @RequestParam(value = "searchCondition", required = false) String searchCondition,
                                      @RequestParam(value = "searchContent", required = false) String searchContent,
-                                     @RequestParam(value = "sortColumn", required = false) String sortColumn,
-                                     @RequestParam(value = "sortOrder", required = false) String sortOrder,
+                                     @RequestParam(value = "sortColumn", required = false, defaultValue = "createTime") String sortColumn,
+                                     @RequestParam(value = "sortOrder", required = false, defaultValue = "descending") String sortOrder,
                                      @RequestParam(value = "announcementReleaseTime", required = false) String announcementReleaseTime,
                                      @RequestParam(value = "tenderDeadline", required = false) String tenderDeadline,
                                      @RequestParam(value = "filter", required = false, defaultValue = "0") int filter) {

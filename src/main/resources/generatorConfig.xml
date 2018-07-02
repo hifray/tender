@@ -66,7 +66,7 @@
             <!-- 生成的方法名 -->
             <property name="methodNameCalculator" value="extended"/>
             <!-- 基类接口 -->
-            <property name="rootInterface" value="${javaClientGenerator.rootInterface}"/>
+            <!--<property name="rootInterface" value="${javaClientGenerator.rootInterface}"/>-->
         </javaClientGenerator>
 
         <!-- 数据表配置 -->
@@ -82,6 +82,10 @@
             <!--<columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />-->
             <!--&lt;!&ndash;映射时忽略的字段&ndash;&gt;-->
             <!--<ignoreColumn column="FRED" />-->
+        </table>
+        
+        <table tableName="sgcc_project_detail" domainObjectName="SGCCProjectDetail" mapperName="ISGCCProjectDetailMapper">
+            <property name="useActualColumnNames" value="false" />
         </table>
 
     </context>

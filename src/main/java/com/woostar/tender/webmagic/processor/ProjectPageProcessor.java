@@ -18,10 +18,9 @@ import java.util.List;
  */
 public class ProjectPageProcessor extends BaseProcessor {
     /**
-     * 爬取项目信息参数(第一页、每页十个、公告状态为报名中)
+     * 爬取项目信息参数(第一页、每页150个、公告状态为报名中)
      */
-    public static final String DETAIL_URL_PARAMETER = "page=1&rows=150";
-
+    public static final String DETAIL_URL_PARAMETER = "page=1&rows=150&bmFlag=0";
     /**
      * 目标链接
      */
@@ -31,6 +30,7 @@ public class ProjectPageProcessor extends BaseProcessor {
      */
     public static final String LIST_URL = "http://www.jy.whzbtb.com/V2PRTS/TendererNoticeInfoList.do?";
 
+    public static final String FIELD_KEY = "projectDetail";
     /**
      * 爬虫主逻辑方法
      * @param page 爬取的页面
@@ -86,7 +86,7 @@ public class ProjectPageProcessor extends BaseProcessor {
                 if (projectDetails.get(0) == null) {
                     page.setSkip(true);
                 } else {
-                    page.putField("projectDetail", projectDetail);
+                    page.putField(FIELD_KEY, projectDetail);
                 }
             }
         } catch (Exception e) {
@@ -105,10 +105,4 @@ public class ProjectPageProcessor extends BaseProcessor {
     public Site getSite() {
         return site;
     }
-
-    private String getContent(Selectable selectable, String regexString) {
-        // 去掉文本内容中的 &nbsp;
-        return selectable.replace("&nbsp;", "").regex(regexString).toString();
-    }
-
 }

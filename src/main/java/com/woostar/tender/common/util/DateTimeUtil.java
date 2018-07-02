@@ -30,7 +30,10 @@ public final class DateTimeUtil {
      * @return 转换后的Date对象
      */
     public static Date stringToDate(String targetString, String format) {
-        return DateTimeFormat.forPattern(format).parseDateTime(targetString).toDate();
+        if (StringUtils.isNotEmpty(targetString)) {
+            return DateTimeFormat.forPattern(format).parseDateTime(targetString).toDate();
+        }
+        return null;
     }
 
     /**

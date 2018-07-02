@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.selector.Selectable;
 
 /**
  * @author huangs
@@ -32,5 +33,10 @@ public class BaseProcessor implements PageProcessor {
     @Override
     public Site getSite() {
         return null;
+    }
+
+    protected String getContent(Selectable selectable, String regexString) {
+        // 去掉文本内容中的 &nbsp;
+        return selectable.replace("&nbsp;", "").regex(regexString).toString().trim();
     }
 }

@@ -10,33 +10,33 @@
 	<script th:src="@{/js/common.js}"></script>
 	<script th:src="@{/assets/vue-2.5.16/vue.js}"></script>
 	<script th:src="@{/assets/element-ui/index.js}"></script>
+	<style>
+		.el-select .el-input {
+			min-width: 130px;
+		}
+		.el-table .even-row {
+			background: #E5F1ED;
+		}
+		.el-table .odd-row {
+			background: #F9F9F9;
+		}
+		.input-with-select .el-input-group__prepend {
+			background-color: #fff;
+		}
+		.inline-input {
+			min-width: 400px;
+		}
+		.el-table .header-cell {
+			background: #4FA9A0;
+			color: white;
+		}
+		.text-item {
+			color: #8F9297;
+			float: right;
+			line-height: 40px;
+		}
+	</style>
 </head>
-<style>
-	.el-select .el-input {
-		min-width: 130px;
-	}
-	.el-table .even-row {
-		background: #E5F1ED;
-	}
-	.el-table .odd-row {
-		background: #F9F9F9;
-	}
-	.input-with-select .el-input-group__prepend {
-		background-color: #fff;
-	}
-	.inline-input {
-		min-width: 400px;
-	}
-	.el-table .header-cell {
-		background: #4FA9A0;
-		color: white;
-	}
-	.text-item {
-		color: #8F9297;
-		float: right;
-		line-height: 40px;
-	}
-</style>
 
 <body>
 <div id="tender">
@@ -235,7 +235,6 @@
 		</el-footer>
 	</el-container>
 </div>
-</body>
 
 <script type="text/javascript" th:inline="none">
 	let vue = new Vue({
@@ -287,19 +286,19 @@
 				options: {
 					shortcuts: [{
 						text: '今天',
-						onClick(picker) {
+						onClick: picker => {
 							picker.$emit('pick', new Date());
 						}
 					}, {
 						text: '昨天',
-						onClick(picker) {
+						onClick: picker => {
 							const date = new Date();
 							date.setTime(date.getTime() - 3600 * 1000 * 24);
 							picker.$emit('pick', date);
 						}
 					}, {
 						text: '一周前',
-						onClick(picker) {
+						onClick: picker => {
 							const date = new Date();
 							date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
 							picker.$emit('pick', date);
@@ -551,4 +550,5 @@
 		sortColumn: 'createTime'
 	});
 </script>
+</body>
 </html>

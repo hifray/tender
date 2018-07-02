@@ -1,6 +1,7 @@
 package com.woostar.tender.quartz;
 
 import com.woostar.tender.quartz.job.ProjectJob;
+import com.woostar.tender.quartz.job.SGCCJob;
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ public class JobConfig {
      */
     private interface CornSchedule {
         String PROJECT_JOB = "0 0 */1 * * ?";
+        String SGCC_JOB = "0 0 */1 * * ?";
     }
 
     /**
@@ -25,6 +27,7 @@ public class JobConfig {
      */
     private interface JobIdentity {
         String PROJECT_JOB = "PROJECT_JOB";
+        String SGCC_JOB = "SGCC_JOB";
     }
 
     @Bean
@@ -41,6 +44,24 @@ public class JobConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(projectJobDetail())
                 .withIdentity(JobIdentity.PROJECT_JOB)
+                .withSchedule(cronScheduleBuilder)
+                .build();
+    }
+
+    @Bean
+    public JobDetail sgccJobDetail() {
+        return JobBuilder.newJob(SGCCJob.class)
+                .withIdentity(JobIdentity.SGCC_JOB)
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger sgccTaskTrigger() {
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(CornSchedule.SGCC_JOB);
+        return TriggerBuilder.newTrigger()
+                .forJob(sgccJobDetail())
+                .withIdentity(JobIdentity.SGCC_JOB)
                 .withSchedule(cronScheduleBuilder)
                 .build();
     }
