@@ -1,10 +1,13 @@
 package com.woostar.tender.web.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.woostar.tender.common.http.ServerResponse;
+import com.woostar.tender.model.ProjectDetail;
 import com.woostar.tender.web.service.IProjectDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("/tender")
-public class ProjectDetailController extends BaseController {
+public class ProjectDetailController{
 
     private final IProjectDetailService iProjectDetailService;
 
@@ -44,15 +47,15 @@ public class ProjectDetailController extends BaseController {
      */
     @GetMapping("/list/search")
     @ResponseBody
-    public ServerResponse searchList(@RequestParam(value = "pageNum", required = false, defaultValue = "1")int pageNum,
-                                     @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-                                     @RequestParam(value = "searchCondition", required = false) String searchCondition,
-                                     @RequestParam(value = "searchContent", required = false) String searchContent,
-                                     @RequestParam(value = "sortColumn", required = false, defaultValue = "createTime") String sortColumn,
-                                     @RequestParam(value = "sortOrder", required = false, defaultValue = "descending") String sortOrder,
-                                     @RequestParam(value = "announcementReleaseTime", required = false) String announcementReleaseTime,
-                                     @RequestParam(value = "tenderDeadline", required = false) String tenderDeadline,
-                                     @RequestParam(value = "filter", required = false, defaultValue = "0") int filter) {
+    public ServerResponse<PageInfo<ProjectDetail>> searchList(@RequestParam(value = "pageNum", required = false, defaultValue = "1")int pageNum,
+                                                              @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+                                                              @RequestParam(value = "searchCondition", required = false) String searchCondition,
+                                                              @RequestParam(value = "searchContent", required = false) String searchContent,
+                                                              @RequestParam(value = "sortColumn", required = false, defaultValue = "createTime") String sortColumn,
+                                                              @RequestParam(value = "sortOrder", required = false, defaultValue = "descending") String sortOrder,
+                                                              @RequestParam(value = "announcementReleaseTime", required = false) String announcementReleaseTime,
+                                                              @RequestParam(value = "tenderDeadline", required = false) String tenderDeadline,
+                                                              @RequestParam(value = "filter", required = false, defaultValue = "0") int filter) {
         return iProjectDetailService.searchList(pageNum, pageSize, searchCondition, searchContent, sortColumn, sortOrder, announcementReleaseTime, tenderDeadline, filter);
     }
 
@@ -64,7 +67,7 @@ public class ProjectDetailController extends BaseController {
      */
     @GetMapping("/list/remote")
     @ResponseBody
-    public ServerResponse searchRemote(@RequestParam("searchCondition") String searchCondition, @RequestParam("searchContent") String searchContent) {
+    public ServerResponse<List<Map<String,String>>> searchRemote(@RequestParam("searchCondition") String searchCondition, @RequestParam("searchContent") String searchContent) {
         return iProjectDetailService.searchRemote(searchCondition, searchContent);
     }
 

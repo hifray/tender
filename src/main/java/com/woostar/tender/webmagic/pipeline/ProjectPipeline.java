@@ -2,6 +2,8 @@ package com.woostar.tender.webmagic.pipeline;
 
 import com.woostar.tender.mapper.IProjectDetailMapper;
 import com.woostar.tender.model.ProjectDetail;
+import com.woostar.tender.model.example.ProjectDetailExample;
+import com.woostar.tender.webmagic.processor.BasePageProcessor;
 import com.woostar.tender.webmagic.processor.ProjectPageProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author huangs
@@ -35,16 +38,18 @@ public class ProjectPipeline implements Pipeline {
     @Override
     public void process(ResultItems resultItems, Task task) {
         try {
-            ProjectDetail projectDetail = resultItems.get(ProjectPageProcessor.FIELD_KEY);
+            ProjectDetail projectDetail = resultItems.get(BasePageProcessor.FIELD_KEY);
             if (projectDetail != null) {
-                if (iProjectDetailMapper.selectByPrimaryKey(projectDetail.getProjectId()) == null) {
+                ProjectDetailExample sqlExample = new ProjectDetailExample();
+                sqlExample.createCriteria().andProjectIdEqualTo(projectDetail.getProjectId());
+                if (iProjectDetailMapper.selectByExample(sqlExample).size() == 0) {
                     // 数据库中无此条记录时存储
                     projectDetail.setCreateTime(new Date());
                     iProjectDetailMapper.insert(projectDetail);
                 } else {
                     // 数据库中存在此条记录则更新
                     projectDetail.setUpdateTime(new Date());
-                    iProjectDetailMapper.updateByPrimaryKeySelective(projectDetail);
+                    iProjectDetailMapper.updateByExampleSelective(projectDetail, sqlExample);
                 }
             }
         } catch (Exception e) {

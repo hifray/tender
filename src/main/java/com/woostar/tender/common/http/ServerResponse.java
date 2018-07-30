@@ -8,7 +8,10 @@ import java.io.Serializable;
  * @description 服务器响应封装类
  */
 public final class ServerResponse<T> implements Serializable {
-    /**
+
+    private static final long serialVersionUID = -1624665057128307191L;
+    
+	/**
      * 响应状态码
      */
     private final Integer status;
@@ -50,7 +53,7 @@ public final class ServerResponse<T> implements Serializable {
         }
 
         public ServerResponse<T> build() {
-            return new ServerResponse<>(this);
+            return new ServerResponse<T>(this);
         }
     }
 

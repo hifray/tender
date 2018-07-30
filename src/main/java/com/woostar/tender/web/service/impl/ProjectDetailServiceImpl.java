@@ -43,34 +43,34 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
     }
 
     @Override
-    public ServerResponse searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter) {
+    public ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter) {
         ProjectDetailExample sqlExample = new ProjectDetailExample();
         ProjectDetailExample.Criteria criteria = sqlExample.createCriteria();
-        // 条件搜索
-        if (StringUtils.isNotEmpty(searchCondition) && StringUtils.isNotEmpty(searchContent)) {
-            switch (searchCondition) {
-                case "报建名称":
-                    criteria.andReportNameLike('%'+ searchContent +'%');
-                    break;
-                case "报建编号":
-                    criteria.andReportNumberLike('%'+ searchContent +'%');
-                    break;
-                case "招标项目名称":
-                    criteria.andTenderProjectNameLike('%'+ searchContent +'%');
-                    break;
-                case "招标登记编号":
-                    criteria.andTenderRegistrationNumberLike('%'+ searchContent +'%');
-                    break;
-                default:
-                    // 表示无数据
-                    criteria.andProjectIdIsNull();
-                    break;
-            }
-        }
-        // 公告发布时间
-        if (StringUtils.isNotEmpty(announcementReleaseTime)) {
-            criteria.andAnnouncementReleaseTimeLessThan(DateTimeUtil.stringToDate(announcementReleaseTime, DateTimeUtil.DEFAULT_FORMAT));
-        }
+//        // 条件搜索
+//        if (StringUtils.isNotEmpty(searchCondition) && StringUtils.isNotEmpty(searchContent)) {
+//            switch (searchCondition) {
+//                case "报建名称":
+//                    criteria.andReportNameLike('%'+ searchContent +'%');
+//                    break;
+//                case "报建编号":
+//                    criteria.andReportNumberLike('%'+ searchContent +'%');
+//                    break;
+//                case "招标项目名称":
+//                    criteria.andTenderProjectNameLike('%'+ searchContent +'%');
+//                    break;
+//                case "招标登记编号":
+//                    criteria.andTenderRegistrationNumberLike('%'+ searchContent +'%');
+//                    break;
+//                default:
+//                    // 表示无数据
+//                    criteria.andProjectIdIsNull();
+//                    break;
+//            }
+//        }
+//        // 公告发布时间
+//        if (StringUtils.isNotEmpty(announcementReleaseTime)) {
+//            criteria.andAnnouncementReleaseTimeLessThan(DateTimeUtil.stringToDate(announcementReleaseTime, DateTimeUtil.DEFAULT_FORMAT));
+//        }
         // 报名截止时间
         if (StringUtils.isNotEmpty(tenderDeadline)) {
             criteria.andTenderDeadlineLessThan(DateTimeUtil.stringToDate(tenderDeadline, DateTimeUtil.DEFAULT_FORMAT));
@@ -95,49 +95,49 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
         PageHelper.startPage(pageNum, pageSize);
         List<ProjectDetail> projectDetailList = iProjectDetailMapper.selectByExample(sqlExample);
         PageInfo<ProjectDetail> pageInfo = new PageInfo<>(projectDetailList);
-        return new ServerResponse.Builder<>(StatusCodeEnum.OK.getCode())
+        return new ServerResponse.Builder<PageInfo<ProjectDetail>>(StatusCodeEnum.OK.getCode())
                 .msg(StringUtils.EMPTY)
                 .data(pageInfo)
                 .build();
     }
 
     @Override
-    public ServerResponse searchRemote(String searchCondition, String searchContent) {
+    public ServerResponse<List<Map<String, String>>> searchRemote(String searchCondition, String searchContent) {
         ProjectDetailExample sqlExample = new ProjectDetailExample();
         List<Map<String, String>> searchRemoteResultList = new ArrayList<>();
-        if (StringUtils.equals(searchCondition, "报建名称") && StringUtils.isNotEmpty(searchContent)) {
-            sqlExample.createCriteria().andReportNameLike('%'+ searchContent +'%');
-            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-                Map<String, String> map = new HashMap<>();
-                map.put("value", projectDetail.getReportName());
-                searchRemoteResultList.add(map);
-            }
-        }
-        if (StringUtils.equals(searchCondition, "报建编号") && StringUtils.isNotEmpty(searchContent)) {
-            sqlExample.createCriteria().andReportNumberLike('%'+ searchContent +'%');
-            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-                Map<String, String> map = new HashMap<>();
-                map.put("value", projectDetail.getReportNumber());
-                searchRemoteResultList.add(map);
-            }
-        }
-        if (StringUtils.equals(searchCondition, "招标项目名称") && StringUtils.isNotEmpty(searchContent)) {
-            sqlExample.createCriteria().andTenderProjectNameLike('%'+ searchContent +'%');
-            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-                Map<String, String> map = new HashMap<>();
-                map.put("value", projectDetail.getTenderProjectName());
-                searchRemoteResultList.add(map);
-            }
-        }
-        if (StringUtils.equals(searchCondition, "招标登记编号") && StringUtils.isNotEmpty(searchContent)) {
-            sqlExample.createCriteria().andTenderRegistrationNumberLike('%'+ searchContent +'%');
-            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-                Map<String, String> map = new HashMap<>();
-                map.put("value", projectDetail.getTenderRegistrationNumber());
-                searchRemoteResultList.add(map);
-            }
-        }
-        return new ServerResponse.Builder<>(StatusCodeEnum.OK.getCode())
+//        if (StringUtils.equals(searchCondition, "报建名称") && StringUtils.isNotEmpty(searchContent)) {
+//            sqlExample.createCriteria().andReportNameLike('%'+ searchContent +'%');
+//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
+//                Map<String, String> map = new HashMap<>();
+//                map.put("value", projectDetail.getReportName());
+//                searchRemoteResultList.add(map);
+//            }
+//        }
+//        if (StringUtils.equals(searchCondition, "报建编号") && StringUtils.isNotEmpty(searchContent)) {
+//            sqlExample.createCriteria().andReportNumberLike('%'+ searchContent +'%');
+//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
+//                Map<String, String> map = new HashMap<>();
+//                map.put("value", projectDetail.getReportNumber());
+//                searchRemoteResultList.add(map);
+//            }
+//        }
+//        if (StringUtils.equals(searchCondition, "招标项目名称") && StringUtils.isNotEmpty(searchContent)) {
+//            sqlExample.createCriteria().andTenderProjectNameLike('%'+ searchContent +'%');
+//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
+//                Map<String, String> map = new HashMap<>();
+//                map.put("value", projectDetail.getTenderProjectName());
+//                searchRemoteResultList.add(map);
+//            }
+//        }
+//        if (StringUtils.equals(searchCondition, "招标登记编号") && StringUtils.isNotEmpty(searchContent)) {
+//            sqlExample.createCriteria().andTenderRegistrationNumberLike('%'+ searchContent +'%');
+//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
+//                Map<String, String> map = new HashMap<>();
+//                map.put("value", projectDetail.getTenderRegistrationNumber());
+//                searchRemoteResultList.add(map);
+//            }
+//        }
+        return new ServerResponse.Builder<List<Map<String, String>>>(StatusCodeEnum.OK.getCode())
                 .msg(StringUtils.EMPTY)
                 .data(searchRemoteResultList)
                 .build();
@@ -145,43 +145,43 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
 
     @Override
     public void exportExcel(HttpServletResponse response, String projectIds) {
-        String[] projectIdList = projectIds.split(",");
-        List<ProjectDetailExcel> list = new ArrayList<>();
-        if (projectIdList.length > 0) {
-            for (String projectId : projectIdList) {
-                ProjectDetail projectDetail = iProjectDetailMapper.selectByPrimaryKey(projectId);
-                ProjectDetailExcel projectDetailExcel = new ProjectDetailExcel();
-                projectDetailExcel.setReportName(projectDetail.getReportName());
-                projectDetailExcel.setReportNumber(projectDetail.getReportNumber());
-                projectDetailExcel.setTenderProjectName(projectDetail.getTenderProjectName());
-                projectDetailExcel.setTenderRegistrationNumber(projectDetail.getTenderRegistrationNumber());
-                projectDetailExcel.setTenderProjectDescription(projectDetail.getTenderProjectDescription());
-                projectDetailExcel.setTenderContactPerson(projectDetail.getTenderContactPerson());
-                projectDetailExcel.setTenderContactPhone(projectDetail.getTenderContactPersonPhone());
-                projectDetailExcel.setTenderProxyContactPerson(projectDetail.getTenderProxyContactPerson());
-                projectDetailExcel.setTenderProxyContactPhone(projectDetail.getTenderProxyContactPersonPhone());
-                projectDetailExcel.setTenderDeadline(projectDetail.getTenderDeadline());
-                projectDetailExcel.setAnnouncementReleaseTime(projectDetail.getAnnouncementReleaseTime());
-                projectDetailExcel.setRemark(projectDetail.getRemark());
-                list.add(projectDetailExcel);
-            }
-        }
-        // 创建excel文档
-        HSSFWorkbook workbook = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("招投标项目信息", "招投标项目"), ProjectDetailExcel.class, list);
-        // todo: 设置excel样式
-        // 导出到excel文件
-        String fileNameSuffix = DateTimeUtil.dateToString(new Date(), "yyyyMMddHHmmss");
-        String fileName = "招标项目信息_"+ fileNameSuffix +".xls";
-        response.setContentType("application/ms-excel;charset=UTF-8");
-        try {
-            response.setHeader("Content-Disposition", "attachment;filename=".concat(String.valueOf(URLEncoder.encode(fileName, "UTF-8"))));
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("文件编码格式不支持", e);
-        }
-        try {
-            workbook.write(response.getOutputStream());
-        } catch (IOException e) {
-            LOGGER.error("excel文件导出错误", e);
-        }
+//        String[] projectIdList = projectIds.split(",");
+//        List<ProjectDetailExcel> list = new ArrayList<>();
+//        if (projectIdList.length > 0) {
+//            for (String projectId : projectIdList) {
+//                ProjectDetail projectDetail = iProjectDetailMapper.selectByPrimaryKey(projectId);
+//                ProjectDetailExcel projectDetailExcel = new ProjectDetailExcel();
+//                projectDetailExcel.setReportName(projectDetail.getReportName());
+//                projectDetailExcel.setReportNumber(projectDetail.getReportNumber());
+//                projectDetailExcel.setTenderProjectName(projectDetail.getTenderProjectName());
+//                projectDetailExcel.setTenderRegistrationNumber(projectDetail.getTenderRegistrationNumber());
+//                projectDetailExcel.setTenderProjectDescription(projectDetail.getTenderProjectDescription());
+//                projectDetailExcel.setTenderContactPerson(projectDetail.getTenderContactPerson());
+//                projectDetailExcel.setTenderContactPhone(projectDetail.getTenderContactPersonPhone());
+//                projectDetailExcel.setTenderProxyContactPerson(projectDetail.getTenderProxyContactPerson());
+//                projectDetailExcel.setTenderProxyContactPhone(projectDetail.getTenderProxyContactPersonPhone());
+//                projectDetailExcel.setTenderDeadline(projectDetail.getTenderDeadline());
+//                projectDetailExcel.setAnnouncementReleaseTime(projectDetail.getAnnouncementReleaseTime());
+//                projectDetailExcel.setRemark(projectDetail.getRemark());
+//                list.add(projectDetailExcel);
+//            }
+//        }
+//        // 创建excel文档
+//        HSSFWorkbook workbook = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("招投标项目信息", "招投标项目"), ProjectDetailExcel.class, list);
+//        // todo: 设置excel样式
+//        // 导出到excel文件
+//        String fileNameSuffix = DateTimeUtil.dateToString(new Date(), "yyyyMMddHHmmss");
+//        String fileName = "招标项目信息_"+ fileNameSuffix +".xls";
+//        response.setContentType("application/ms-excel;charset=UTF-8");
+//        try {
+//            response.setHeader("Content-Disposition", "attachment;filename=".concat(String.valueOf(URLEncoder.encode(fileName, "UTF-8"))));
+//        } catch (UnsupportedEncodingException e) {
+//            LOGGER.error("文件编码格式不支持", e);
+//        }
+//        try {
+//            workbook.write(response.getOutputStream());
+//        } catch (IOException e) {
+//            LOGGER.error("excel文件导出错误", e);
+//        }
     }
 }

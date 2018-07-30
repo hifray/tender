@@ -70,22 +70,9 @@
         </javaClientGenerator>
 
         <!-- 数据表配置 -->
-        <table tableName="tender_project_detail" domainObjectName="ProjectDetail" mapperName="IProjectDetailMapper"
-               enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true"
-               enableSelectByExample="true" selectByExampleQueryId="true" >
-            <!-- 是否使用实际的数据库字段名作为实体类字段名 -->
-            <property name="useActualColumnNames" value="false"/>
-            <!-- 主键设置 -->
-            <!--<generatedKey column="project_id" sqlStatement="MySql" identity="false" />-->
-            <!-- 字段设置 -->
-            <!--<columnOverride column="DATE_FIELD" property="startDate" />-->
-            <!--<columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />-->
-            <!--&lt;!&ndash;映射时忽略的字段&ndash;&gt;-->
-            <!--<ignoreColumn column="FRED" />-->
-        </table>
-        
-        <table tableName="sgcc_project_detail" domainObjectName="SGCCProjectDetail" mapperName="ISGCCProjectDetailMapper">
+        <table tableName="project_detail" domainObjectName="ProjectDetail" mapperName="IProjectDetailMapper">
             <property name="useActualColumnNames" value="false" />
+            <generatedKey column="ID" sqlStatement="MySql" identity="true" />
         </table>
 
     </context>

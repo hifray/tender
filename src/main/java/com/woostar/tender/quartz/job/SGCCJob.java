@@ -1,7 +1,7 @@
 package com.woostar.tender.quartz.job;
 
 import com.woostar.tender.common.util.DateTimeUtil;
-import com.woostar.tender.webmagic.pipeline.SGCCPipeline;
+import com.woostar.tender.webmagic.pipeline.ProjectPipeline;
 import com.woostar.tender.webmagic.processor.SGCCPageProcessor;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -16,7 +16,7 @@ import us.codecraft.webmagic.Spider;
 public class SGCCJob extends BaseJob {
 
     @Autowired
-    private SGCCPipeline sgccPipeline;
+    private ProjectPipeline projectPipeline;
 
     /**
      * 定时任务执行方法
@@ -29,7 +29,7 @@ public class SGCCJob extends BaseJob {
         try {
             Spider.create(new SGCCPageProcessor())
                     .addUrl(SGCCPageProcessor.LIST_URL + SGCCPageProcessor.LIST_URL_PARAMETERS)
-                    .addPipeline(sgccPipeline)
+                    .addPipeline(projectPipeline)
                     .thread(5)
                     .setExitWhenComplete(true)
                     .run();

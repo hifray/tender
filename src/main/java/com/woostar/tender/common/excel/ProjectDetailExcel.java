@@ -11,7 +11,9 @@ import java.util.Date;
  */
 public class ProjectDetailExcel implements java.io.Serializable {
 
-    @Excel(name = "招标项目名称", height = 30, width = 40)
+    private static final long serialVersionUID = 4880061842792317921L;
+
+	@Excel(name = "招标项目名称", height = 30, width = 40)
     private String tenderProjectName;
 
     @Excel(name = " 报建名称", width = 40)

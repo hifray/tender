@@ -1,6 +1,10 @@
 package com.woostar.tender.web.service;
 
+import com.github.pagehelper.PageInfo;
 import com.woostar.tender.common.http.ServerResponse;
+import com.woostar.tender.model.ProjectDetail;
+
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +28,7 @@ public interface IProjectDetailService {
      * @param filter 公告状态（报名中、已截止）
      * @return 搜索结果分页
      */
-    ServerResponse searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter);
+    ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter);
 
     /**
      * 根据搜索条件显示搜索建议
@@ -32,7 +36,7 @@ public interface IProjectDetailService {
      * @param searchContent 搜索内容
      * @return 搜索建议
      */
-    ServerResponse searchRemote(String searchCondition, String searchContent);
+    ServerResponse<List<Map<String, String>>> searchRemote(String searchCondition, String searchContent);
 
     /**
      * 导出选中的项目信息至excel
