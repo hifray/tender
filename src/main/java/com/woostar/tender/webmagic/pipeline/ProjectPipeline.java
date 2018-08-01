@@ -4,7 +4,6 @@ import com.woostar.tender.mapper.IProjectDetailMapper;
 import com.woostar.tender.model.ProjectDetail;
 import com.woostar.tender.model.example.ProjectDetailExample;
 import com.woostar.tender.webmagic.processor.BasePageProcessor;
-import com.woostar.tender.webmagic.processor.ProjectPageProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,27 +13,42 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 import java.util.Date;
-import java.util.List;
 
 /**
- * @author huangs
- * @createtime 2018-06-01
- * @description
+ * Class ProjectPipeline 存储数据Pipeline类
+ *
+ * @author huangshuo
+ * Created on 2018-06-01
  */
 @Component
 public class ProjectPipeline implements Pipeline {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectPipeline.class);
     /**
-     * 注入IProjectDetailDao
+     * Field LOGGER
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectPipeline.class);
+
+    /**
+     * Field iProjectDetailMapper 构造器注入
      */
     private final IProjectDetailMapper iProjectDetailMapper;
 
+    /**
+     * Constructor ProjectPipeline creates a new ProjectPipeline instance.
+     *
+     * @param iProjectDetailMapper of type IProjectDetailMapper
+     */
     @Autowired
     public ProjectPipeline(IProjectDetailMapper iProjectDetailMapper) {
         this.iProjectDetailMapper = iProjectDetailMapper;
     }
 
+    /**
+     * Method process 主方法
+     *
+     * @param resultItems of type ResultItems
+     * @param task of type Task
+     */
     @Override
     public void process(ResultItems resultItems, Task task) {
         try {

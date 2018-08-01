@@ -9,39 +9,40 @@ import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author huangs
- * @createtime 2018-06-05
- * @description
+ * Interface IProjectDetailService
+ *
+ * @author huangshuo
+ * Created on 2018-06-05
  */
 public interface IProjectDetailService {
 
     /**
-     * 招标项目信息分页搜索
-     * @param pageNum 页码
-     * @param pageSize 分页大小
-     * @param searchCondition 搜索条件
-     * @param searchContent 搜索条件内容
-     * @param sortColumn 排序项
-     * @param sortOrder 排序规则
-     * @param announcementReleaseTime 公告发布时间
-     * @param tenderDeadline 报名结束时间
-     * @param filter 公告状态（报名中、已截止）
-     * @return 搜索结果分页
+     * Method searchList 搜索项目信息
+     *
+     * @param pageNum of type int 页码
+     * @param pageSize of type int 分页大小
+     * @param searchContent of type String 搜索内容
+     * @param announceStatus of type int 公告状态
+     * @param sourceWebsite of type int 来源网站
+     * @param releaseTime of type String 公告发布时间
+     * @param deadline of type String 公告截止时间
+     * @return ServerResponse<PageInfo < ProjectDetail>>
      */
-    ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter);
+    ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchContent, int announceStatus, int sourceWebsite, String releaseTime, String deadline);
 
     /**
-     * 根据搜索条件显示搜索建议
-     * @param searchCondition 搜索条件
-     * @param searchContent 搜索内容
-     * @return 搜索建议
+     * Method searchAutoComplete 自动补全搜索内容
+     *
+     * @param searchContent of type String 搜索内容
+     * @return ServerResponse<List < Map < String ,   String>>>
      */
-    ServerResponse<List<Map<String, String>>> searchRemote(String searchCondition, String searchContent);
+    ServerResponse<List<Map<String, String>>> searchAutoComplete(String searchContent);
 
     /**
-     * 导出选中的项目信息至excel
-     * @param response 服务器响应
-     * @param projectIds 选中的项目id拼接的字符串
+     * Method exportExcel 导出项目信息至Excel
+     *
+     * @param response of type HttpServletResponse
+     * @param projectIds of type String
      */
     void exportExcel(HttpServletResponse response, String projectIds);
 }

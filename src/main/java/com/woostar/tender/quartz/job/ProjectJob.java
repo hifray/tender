@@ -9,21 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.codecraft.webmagic.Spider;
 
 /**
- * @author huangs
- * @createtime 2018-06-01
- * @description 爬取项目信息定时任务类
+ * Class ProjectJob
+ *
+ * @author huangshuo
+ * Created on 2018-06-01
  */
 public class ProjectJob extends BaseJob {
+
     /**
+     * Field projectPipeline
      * 注入ProjectPipeline(Job类必须有默认的无参构造器，因而此处不可用构造器注入，否则Job将无法实例化)
      */
     @Autowired
     private ProjectPipeline projectPipeline;
 
     /**
-     * 定时任务执行方法
-     * @param jobExecutionContext 定时任务内容
-     * @throws JobExecutionException 执行异常
+     * Method executeInternal 定时任务主方法
+     *
+     * @param jobExecutionContext of type JobExecutionContext
+     * @throws JobExecutionException when 定时任务异常
      */
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {

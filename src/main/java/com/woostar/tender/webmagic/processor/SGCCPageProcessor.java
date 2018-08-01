@@ -12,19 +12,27 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author huangs
- * @createtime 2018-06-26
- * @description
+ * Class SGCCPageProcessor 国家电网电子商务平台PageProcessor类
+ *
+ * @author huangshuo
+ * Created on 2018-06-26
  */
 public class SGCCPageProcessor extends BasePageProcessor {
 
+    /**
+     * Field LIST_URL 爬虫初始请求地址
+     */
     public static final String LIST_URL = "http://ecp.sgcc.com.cn/topic_project_list.jsp?";
 
+    /**
+     * Field LIST_URL_PARAMETERS 项目信息参数
+     */
     public static final String LIST_URL_PARAMETERS = "company_id=00&status=2";
 
     /**
-     * 爬虫主逻辑方法
-     * @param page 爬取的页面
+     * Method process 爬虫主方法
+     *
+     * @param page of type Page
      */
     @Override
     public void process(Page page) {
@@ -91,6 +99,13 @@ public class SGCCPageProcessor extends BasePageProcessor {
         }
     }
 
+    /**
+     * Method getSite returns the site of this BasePageProcessor object.
+     *
+     *  Field site 目标网站
+     *
+     * @return the site (type Site) of this BasePageProcessor object.
+     */
     @Override
     public Site getSite() {
         return site;

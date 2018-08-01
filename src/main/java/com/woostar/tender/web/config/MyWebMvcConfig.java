@@ -6,14 +6,18 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * The type My web mvc configurer.
+ * Class MyWebMvcConfig
  *
- * @author huangs
- * @createtime 2017-11-14
- * @description
+ * @author huangshuo
+ * Created on 2017-11-14
  */
 @Configuration
 public class MyWebMvcConfig implements WebMvcConfigurer {
+    /**
+     * Method addInterceptors
+     *
+     * @param registry of type InterceptorRegistry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new MyRequestHeaderInterceptor()).addPathPatterns("/**");

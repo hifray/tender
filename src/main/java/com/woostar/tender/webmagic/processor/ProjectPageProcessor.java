@@ -12,27 +12,32 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author huangs
- * @createtime 2018-06-01
- * @description 招标项目爬取processor
+ * Class ProjectPageProcessor 武汉市公共资源中心PageProcessor类
+ *
+ * @author huangshuo
+ * Created on 2018-06-01
  */
 public class ProjectPageProcessor extends BasePageProcessor {
+
     /**
-     * 爬取项目信息参数(第一页、每页150个、公告状态为报名中)
+     * Field DETAIL_URL_PARAMETER 项目信息参数(第一页、每页150个、公告状态为报名中)
      */
     public static final String DETAIL_URL_PARAMETER = "page=1&rows=150&bmFlag=0";
+
     /**
-     * 目标链接
+     * Field DETAIL_URL 爬虫初始请求地址
      */
     private static final String DETAIL_URL = "http://www.jy.whzbtb.com/V2PRTS/TendererNoticeInfoDetail.do?id=";
+
     /**
-     * 获取招标信列表链接
+     * Field LIST_URL 项目信息列表请求地址
      */
     public static final String LIST_URL = "http://www.jy.whzbtb.com/V2PRTS/TendererNoticeInfoList.do?";
 
     /**
-     * 爬虫主逻辑方法
-     * @param page 爬取的页面
+     * Method process 爬虫主方法
+     *
+     * @param page of type Page
      */
     @Override
     public void process(Page page) {
@@ -95,6 +100,13 @@ public class ProjectPageProcessor extends BasePageProcessor {
         }
     }
 
+    /**
+     * Method getSite returns the site of this BasePageProcessor object.
+     *
+     *  Field site 目标网站
+     *
+     * @return the site (type Site) of this BasePageProcessor object.
+     */
     @Override
     public Site getSite() {
         return site;

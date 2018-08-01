@@ -26,123 +26,81 @@ import java.net.URLEncoder;
 import java.util.*;
 
 /**
- * @author huangs
- * @createtime 2018-06-05
- * @description
+ * Class ProjectDetailServiceImpl ProjectDetailService接口实现类
+ *
+ * @author huangshuo
+ * Created on 2018-06-05
  */
 @Component
 public class ProjectDetailServiceImpl implements IProjectDetailService {
 
+    /**
+     * Field LOGGER 日志
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDetailServiceImpl.class);
 
+    /**
+     * Field iProjectDetailMapper 构造器注入
+     */
     private final IProjectDetailMapper iProjectDetailMapper;
 
+    /**
+     * Constructor ProjectDetailServiceImpl creates a new ProjectDetailServiceImpl instance.
+     *
+     * @param iProjectDetailMapper of type IProjectDetailMapper
+     */
     @Autowired
     public ProjectDetailServiceImpl(IProjectDetailMapper iProjectDetailMapper) {
         this.iProjectDetailMapper = iProjectDetailMapper;
     }
 
+    /**
+     * Method searchList 搜索项目信息
+     *
+     * @param pageNum of type int 页码
+     * @param pageSize of type int 分页大小
+     * @param searchContent of type String 搜索内容
+     * @param announceStatus of type int 公告状态
+     * @param sourceWebsite of type int 来源网站
+     * @param releaseTime of type String 公告发布时间
+     * @param deadline of type String 公告截止时间
+     * @return ServerResponse<PageInfo < ProjectDetail>>
+     */
     @Override
-    public ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchCondition, String searchContent, String sortColumn, String sortOrder, String announcementReleaseTime, String tenderDeadline, int filter) {
-        ProjectDetailExample sqlExample = new ProjectDetailExample();
-        ProjectDetailExample.Criteria criteria = sqlExample.createCriteria();
-//        // 条件搜索
-//        if (StringUtils.isNotEmpty(searchCondition) && StringUtils.isNotEmpty(searchContent)) {
-//            switch (searchCondition) {
-//                case "报建名称":
-//                    criteria.andReportNameLike('%'+ searchContent +'%');
-//                    break;
-//                case "报建编号":
-//                    criteria.andReportNumberLike('%'+ searchContent +'%');
-//                    break;
-//                case "招标项目名称":
-//                    criteria.andTenderProjectNameLike('%'+ searchContent +'%');
-//                    break;
-//                case "招标登记编号":
-//                    criteria.andTenderRegistrationNumberLike('%'+ searchContent +'%');
-//                    break;
-//                default:
-//                    // 表示无数据
-//                    criteria.andProjectIdIsNull();
-//                    break;
-//            }
-//        }
-//        // 公告发布时间
-//        if (StringUtils.isNotEmpty(announcementReleaseTime)) {
-//            criteria.andAnnouncementReleaseTimeLessThan(DateTimeUtil.stringToDate(announcementReleaseTime, DateTimeUtil.DEFAULT_FORMAT));
-//        }
-        // 报名截止时间
-        if (StringUtils.isNotEmpty(tenderDeadline)) {
-            criteria.andTenderDeadlineLessThan(DateTimeUtil.stringToDate(tenderDeadline, DateTimeUtil.DEFAULT_FORMAT));
-        }
-        // 搜索结果排序
-        if (StringUtils.isNotEmpty(sortColumn) && StringUtils.isNotEmpty(sortOrder)) {
-            if (StringUtils.equals(sortOrder, "descending")) {
-                sqlExample.orderBy(ProjectDetail.Column.valueOf(sortColumn).desc());
-            }
-            if (StringUtils.equals(sortOrder, "ascending")) {
-                sqlExample.orderBy(ProjectDetail.Column.valueOf(sortColumn).asc());
-            }
-        }
-        // 报名中
-        if (filter == 1) {
-            criteria.andTenderDeadlineGreaterThan(new Date());
-        }
-        // 已截止
-        if (filter == 2) {
-            criteria.andTenderDeadlineLessThan(new Date());
-        }
-        PageHelper.startPage(pageNum, pageSize);
-        List<ProjectDetail> projectDetailList = iProjectDetailMapper.selectByExample(sqlExample);
-        PageInfo<ProjectDetail> pageInfo = new PageInfo<>(projectDetailList);
-        return new ServerResponse.Builder<PageInfo<ProjectDetail>>(StatusCodeEnum.OK.getCode())
-                .msg(StringUtils.EMPTY)
-                .data(pageInfo)
-                .build();
+    public ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchContent, int announceStatus, int sourceWebsite, String releaseTime, String deadline) {
+        return null;
     }
 
+    /**
+     * Method searchAutoComplete 自动补全搜索内容
+     *
+     * @param searchContent of type String 搜索内容
+     * @return ServerResponse<List < Map < String ,   String>>>
+     */
     @Override
-    public ServerResponse<List<Map<String, String>>> searchRemote(String searchCondition, String searchContent) {
+    public ServerResponse<List<Map<String, String>>> searchAutoComplete(String searchContent) {
         ProjectDetailExample sqlExample = new ProjectDetailExample();
         List<Map<String, String>> searchRemoteResultList = new ArrayList<>();
-//        if (StringUtils.equals(searchCondition, "报建名称") && StringUtils.isNotEmpty(searchContent)) {
-//            sqlExample.createCriteria().andReportNameLike('%'+ searchContent +'%');
-//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-//                Map<String, String> map = new HashMap<>();
-//                map.put("value", projectDetail.getReportName());
-//                searchRemoteResultList.add(map);
-//            }
-//        }
-//        if (StringUtils.equals(searchCondition, "报建编号") && StringUtils.isNotEmpty(searchContent)) {
-//            sqlExample.createCriteria().andReportNumberLike('%'+ searchContent +'%');
-//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-//                Map<String, String> map = new HashMap<>();
-//                map.put("value", projectDetail.getReportNumber());
-//                searchRemoteResultList.add(map);
-//            }
-//        }
-//        if (StringUtils.equals(searchCondition, "招标项目名称") && StringUtils.isNotEmpty(searchContent)) {
-//            sqlExample.createCriteria().andTenderProjectNameLike('%'+ searchContent +'%');
-//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-//                Map<String, String> map = new HashMap<>();
-//                map.put("value", projectDetail.getTenderProjectName());
-//                searchRemoteResultList.add(map);
-//            }
-//        }
-//        if (StringUtils.equals(searchCondition, "招标登记编号") && StringUtils.isNotEmpty(searchContent)) {
-//            sqlExample.createCriteria().andTenderRegistrationNumberLike('%'+ searchContent +'%');
-//            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
-//                Map<String, String> map = new HashMap<>();
-//                map.put("value", projectDetail.getTenderRegistrationNumber());
-//                searchRemoteResultList.add(map);
-//            }
-//        }
+        if (StringUtils.isNotEmpty(searchContent)) {
+            sqlExample.createCriteria().andProjectNameLike('%'+ searchContent +'%');
+            for (ProjectDetail projectDetail : iProjectDetailMapper.selectByExample(sqlExample)) {
+                Map<String, String> map = new HashMap<>(16);
+                map.put("value", projectDetail.getProjectName());
+                searchRemoteResultList.add(map);
+            }
+        }
         return new ServerResponse.Builder<List<Map<String, String>>>(StatusCodeEnum.OK.getCode())
                 .msg(StringUtils.EMPTY)
                 .data(searchRemoteResultList)
                 .build();
     }
 
+    /**
+     * Method exportExcel 导出项目信息至Excel
+     *
+     * @param response of type HttpServletResponse
+     * @param projectIds of type String
+     */
     @Override
     public void exportExcel(HttpServletResponse response, String projectIds) {
 //        String[] projectIdList = projectIds.split(",");

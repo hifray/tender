@@ -43,84 +43,106 @@
 	<el-container>
 		<el-header>
 			<el-row style="margin-top: 15px">
-				<el-col :span="6">
+				<el-col :span="4">
 					<el-autocomplete
-							v-model="searchConditions.searchContent"
-							:placeholder="searchConditions.contentHint"
-							select-when-unmatched class="inline-input"
-							:fetch-suggestions="searchRemote">
-						<el-select
-								ref="selectSearchCondition"
-								slot="prepend"
-								v-model="searchConditions.searchCondition"
-								:placeholder="searchConditions.conditionHint"
-								clearable
-								@change="changeSearchCondition">
-							<el-option v-for="item in searchConditions.options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-						</el-select>
+							select-when-unmatched clearable
+							prefix-icon="el-icon-search" class="inline-input"
+							:placeholder="conditions.search.contentHint"
+							:fetch-suggestions="searchContentAutoComplete"
+							v-model="conditions.search.searchContent">
 					</el-autocomplete>
 				</el-col>
 				<el-col :span="2">
-					<el-select clearable placeholder="公告状态" v-model="announcementStatus.value">
+					<el-select
+						clearable
+						:placeholder="conditions.status.statusHint"
+						v-model="conditions.status.announceStatus">
 						<el-option
-								v-for="item in announcementStatus.options"
+								v-for="item in conditions.status.options"
 								:key="item.value"
 								:label="item.label"
 								:value="item.value">
 						</el-option>
 					</el-select>
 				</el-col>
-				<el-col :span="2" style="height: 40px">
-					<span class="text-item">公告发布时间：</span>
+				<el-col :span="4">
+					<el-select
+						multiple collapse-tags
+						:placeholder="conditions.source.sourceHint"
+						v-model="conditions.source.sourceWebsite">
+						<el-option
+							v-for="item in conditions.source.options"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value">
+						</el-option>
+					</el-select>
 				</el-col>
 				<el-col :span="3">
 					<el-date-picker
-							v-model="dateTimePicker.announcementReleaseTime"
-							type="datetime"
-							:value-format="dateTimePicker.valueFormat"
-							placeholder="选择日期时间"
-							align="right"
-							:picker-options="dateTimePicker.options">
+						type="datetime" align="right"
+						:placeholder="conditions.date.releaseTimeHint"
+						:value-format="conditions.date.dateFormat"
+						:picker-options="conditions.date.options"
+						v-model="conditions.date.releaseTime">
 					</el-date-picker>
-				</el-col>
-				<el-col :span="2" style="height: 40px">
-					<span class="text-item">报名截止时间：</span>
 				</el-col>
 				<el-col :span="3">
 					<el-date-picker
-							v-model="dateTimePicker.tenderDeadline"
-							type="datetime"
-							:value-format="dateTimePicker.valueFormat"
-							placeholder="选择日期时间"
-							align="right"
-							:picker-options="dateTimePicker.options">
+						type="datetime" align="right"
+						:placeholder="conditions.date.deadlineHint"
+						:value-format="conditions.date.dateFormat"
+						:picker-options="conditions.date.options"
+						v-model="conditions.date.deadline">
 					</el-date-picker>
 				</el-col>
 				<el-col :span="2">
-					<el-button type="primary" icon="el-icon-search" :loading="loading" @click="clickSearchButton" style="float: right">搜索项目</el-button>
+					<el-button
+						type="primary" icon="el-icon-search" style="float: right"
+						:loading="loading"
+						@click="clickSearchButton">搜索项目</el-button>
 				</el-col>
 				<el-col :span="2">
-					<el-button type="danger" icon="el-icon-delete" @click="clickClearSearchButton" style="float: right">清空条件</el-button>
+					<el-button
+						type="danger" icon="el-icon-delete" style="float: right"
+						@click="clickClearSearchButton">清空条件</el-button>
 				</el-col>
 				<el-col :span="1">
-					<el-tooltip content="清除已选项" placement="top" effect="light">
-						<el-button type="danger" icon="el-icon-delete" circle @click="clickClearSelectedButton" :disabled="clearSelectedButtonDisabled" style="float: right"></el-button>
+					<el-tooltip
+						placement="top" effect="light"
+						:content="exportExcel.clearButtonHint">
+						<el-button
+							circle type="danger" icon="el-icon-delete" style="float: right"
+							:disabled="exportExcel.clearButtonDisabled"
+							@click="clickClearSelectedButton">
+						</el-button>
 					</el-tooltip>
 				</el-col>
 				<el-col :span="1">
-					<el-tooltip content="导出到Excel" placement="top" effect="light">
-						<el-button type="primary" icon="el-icon-document" circle @click="clickExportExcelButton" style="float: right"></el-button>
+					<el-tooltip
+						placement="top" effect="light"
+						:content="exportExcel.exportButtonHint">
+						<el-button
+							circle type="primary" icon="el-icon-document" style="float: right"
+							@click="clickExportExcelButton">
+						</el-button>
 					</el-tooltip>
 				</el-col>
 			</el-row>
-			<el-dialog title="已选项目" center width="30%" :visible.sync="selectedDialog.visible">
-				<el-table row-key="projectId" border stripe :data="selectedDialog.data" max-height="500">
+			<el-dialog
+				center width="30%"
+				:visible.sync="exportExcel.confirmDialog.visible"
+				:title="exportExcel.confirmDialog.title">
+				<el-table
+					border stripe max-height="500"
+					row-key="projectId"
+					:data="exportExcel.confirmDialog.data">
 					<el-table-column label="序号" align="center" min-width="40">
 						<template slot-scope="scope">
 							<div>{{ scope.$index + 1 }}</div>
 						</template>
 					</el-table-column>
-					<el-table-column prop="reportName" label="报建名称" align="center" min-width="250" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="projectName" label="项目名称" align="center" min-width="250" show-overflow-tooltip></el-table-column>
 					<el-table-column label="操作" align="center">
 						<template slot-scope="scope">
 							<el-button type="danger" mini @click="clickRemoveSelectedButton(scope.$index, scope.row)">移除</el-button>
@@ -128,9 +150,9 @@
 					</el-table-column>
 				</el-table>
 				<span slot="footer" class="dialog-footer">
-			    <el-button @click="clickCancelExportExcelButton">取 消</el-button>
-					<el-badge :value="selectedDialog.count">
-						<el-button type="primary" @click="clickConfirmExportExcelButton" style="margin-left: 20px">确 定</el-button>
+			    <el-button @click="clickCancelExportExcelButton">取&nbsp;消</el-button>
+					<el-badge :value="exportExcel.confirmDialog.count">
+						<el-button type="primary" @click="clickConfirmExportExcelButton" style="margin-left: 20px">确&nbsp;定</el-button>
 					</el-badge>
 		    </span>
 			</el-dialog>
@@ -246,7 +268,6 @@
 				padding: '0px'
 			},
 			selections: null,
-			clearSelectedButtonDisabled: true,
 			pagination: {
 				pageNum: 1,
 				pageSize: 10,
@@ -256,60 +277,76 @@
 				nextText: '下一页',
 				total: 0
 			},
-			announcementStatus: {
-				value: null,
-				options: [
-					{ value: 1, label: '报名中' },
-					{ value: 2, label: '已截止' }
-				]
+			conditions: {
+				search: {
+					searchContent: '',
+					contentHint: '请输入内容',
+				},
+				status: {
+					announceStatus: '',
+					statusHint: '公告状态',
+					options: [
+						{ value: 1, label: '报名中' },
+						{ value: 2, label: '已截止' },
+						{ value: 3, label: '全部' }
+					]
+				},
+				source: {
+					sourceWebsite: '',
+					sourceHint: '来源网站',
+					options: [
+						{ value: 1, label: '中国招标网' },
+						{ value: 2, label: '采购网与招标网' },
+						{ value: 3, label: '国家电网电子商务平台' },
+						{ value: 4, label: '湖北省公共资源交易中心' },
+						{ value: 5, label: '武汉市公共资源交易中心' },
+						{ value: 6, label: '全部网站' }
+					]
+				},
+				date: {
+					releaseTime: '',
+					releaseTimeHint: '公告开始时间',
+					deadline: '',
+					deadlineHint: '公告截止时间',
+					dateFormat: 'yyyy-MM-dd HH:mm:ss',
+					options: {
+						shortcuts: [{
+							text: '今天',
+							onClick: picker => {
+								picker.$emit('pick', new Date());
+							}
+						}, {
+							text: '昨天',
+							onClick: picker => {
+								const date = new Date();
+								date.setTime(date.getTime() - 3600 * 1000 * 24);
+								picker.$emit('pick', date);
+							}
+						}, {
+							text: '一周前',
+							onClick: picker => {
+								const date = new Date();
+								date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+								picker.$emit('pick', date);
+							}
+						}]
+					},
+				}
 			},
-			searchConditions: {
-				options: [
-					{ value: '报建名称', label: '报建名称'},
-					{ value: '报建编号', label: '报建编号'},
-					{ value: '招标项目名称', label: '招标项目名称'},
-					{ value: '招标登记编号', label: '招标登记编号'}
-				],
-				searchCondition: '',
-				searchContent: '',
-				contentHint: '请输入内容',
-				conditionHint: '搜索条件'
+			exportExcel: {
+				clearButtonHint: '清除已选项',
+				exportButtonHint: '导出到Excel',
+				clearButtonDisabled: true,
+				confirmDialog: {
+					title: '已选项目',
+					visible: false,
+					data: null,
+					count: 0
+				}
 			},
 			sortConditions: {
 				sortColumn: '',
 				sortOrder: ''
-			},
-			dateTimePicker: {
-				announcementReleaseTime: '',
-				tenderDeadline: '',
-				valueFormat: 'yyyy-MM-dd HH:mm:ss',
-				options: {
-					shortcuts: [{
-						text: '今天',
-						onClick: picker => {
-							picker.$emit('pick', new Date());
-						}
-					}, {
-						text: '昨天',
-						onClick: picker => {
-							const date = new Date();
-							date.setTime(date.getTime() - 3600 * 1000 * 24);
-							picker.$emit('pick', date);
-						}
-					}, {
-						text: '一周前',
-						onClick: picker => {
-							const date = new Date();
-							date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-							picker.$emit('pick', date);
-						}
-					}]
-				},
-			},
-			selectedDialog: {
-				visible: false,
-				data: null,
-				count: 0
 			}
 		},
 		methods: {
@@ -325,7 +362,7 @@
 							sortOrder: sortOrder,
 							announcementReleaseTime: announcementReleaseTime,
 							tenderDeadline: tenderDeadline,
-							filter: vue.announcementStatus.value
+							filter: vue.conditions.status.announceStatus
 						},
 						success => {
 							let data = success.data;
@@ -335,11 +372,10 @@
 						}
 				)
 			},
-			searchRemote: function(searchConditionContent, callback) {
-				http.get("/tender/list/remote",
+			searchContentAutoComplete: function(searchContent, callback) {
+				http.get("/tender/list/search/auto_complete",
 						{
-							searchCondition: vue.searchConditions.searchCondition,
-							searchContent: searchConditionContent
+							searchContent: searchContent
 						},
 						success => {
 							callback(success.data);
@@ -363,13 +399,13 @@
 			},
 			getListSelected: function(selection) {
 				vue.selections = selection;
-				vue.clearSelectedButtonDisabled = selection.length <= 0;
-				vue.selectedDialog.data = [];
+				vue.exportExcel.clearButtonDisabled = selection.length <= 0;
+				vue.exportExcel.confirmDialog.data = [];
 				for (let item of selection) {
-					vue.selectedDialog.data.push(item);
+					vue.exportExcel.confirmDialog.data.push(item);
 				}
-				if (vue.selectedDialog.data !== null) {
-					vue.selectedDialog.count = vue.selectedDialog.data.length;
+				if (vue.exportExcel.confirmDialog.data !== null) {
+					vue.exportExcel.confirmDialog.count = vue.exportExcel.confirmDialog.data.length;
 				}
 			},
 			rowDoubleClick: function(row, event) {
@@ -408,14 +444,6 @@
 				vue.searchConditions.contentHint = '请输入' + (searchCondition === '' ? "内容" : searchCondition);
 			},
 			clickSearchButton: function() {
-				if (vue.searchConditions.searchContent !== '' && vue.searchConditions.searchCondition === '') {
-					this.$message({
-						showClose: true,
-						center: true,
-						message: '请选择搜索条件！',
-						type: 'warning'
-					});
-				}
 				vue.searchList({
 					pageNum: 1,
 					pageSize: vue.pagination.pageSize,
@@ -454,7 +482,7 @@
 							projectIds: projectIds
 						}
 				);
-				vue.selectedDialog.visible = true;
+				vue.exportExcel.confirmDialog.visible = true;
 			},
 			clickClearSelectedButton: function() {
 				this.$confirm('清除所有已选项目?', '提示', {
@@ -479,19 +507,19 @@
 				});
 			},
 			clickRemoveSelectedButton: function(index, row) {
-				vue.selectedDialog.data.splice(index, 1);
-				if (vue.selectedDialog.data !== null) {
-					vue.selectedDialog.count = vue.selectedDialog.data.length;
+				vue.exportExcel.confirmDialog.data.splice(index, 1);
+				if (vue.exportExcel.confirmDialog.data !== null) {
+					vue.exportExcel.confirmDialog.count = vue.exportExcel.confirmDialog.data.length;
 				}
-				vue.selections = vue.selectedDialog.data;
+				vue.selections = vue.exportExcel.confirmDialog.data;
 				vue.$refs.projectTable.toggleRowSelection(row, false);
 				if (vue.selections === null || vue.selections.length === 0) {
-					vue.clearSelectedButtonDisabled = true;
-					vue.selectedDialog.visible = false;
+					vue.exportExcel.clearButtonDisabled = true;
+					vue.exportExcel.confirmDialog.visible = false;
 				}
 			},
 			clickCancelExportExcelButton: function() {
-				vue.selectedDialog.visible = false;
+				vue.exportExcel.confirmDialog.visible = false;
 				this.$message({
 					message: '已取消',
 					type: 'info',
@@ -504,7 +532,7 @@
 				for (let projectDetail of vue.selections) {
 					projectIds += projectDetail.projectId + ',';
 				}
-				vue.selectedDialog.visible = false;
+				vue.exportExcel.confirmDialog.visible = false;
 				// 弹出下载窗口
 				window.location.href = "/tender/list/excel?projectIds="+ projectIds +"";
 

@@ -7,27 +7,31 @@ import org.joda.time.format.DateTimeFormat;
 import java.util.Date;
 
 /**
- * @author huangs
- * @createtime 2018-05-30
- * @description Date工具类
+ * Class DateTimeUtil Date工具类
+ *
+ * @author huangshuo
+ * Created on 2018-05-30
  */
 public final class DateTimeUtil {
+
     /**
-     * 默认日期格式
+     * Field DEFAULT_FORMAT 默认日期格式
      */
     public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
+     * Constructor DateTimeUtil creates a new DateTimeUtil instance.
      * 构造器私有化
      */
     private DateTimeUtil() {
     }
 
     /**
-     * String转换为Date
-     * @param targetString 目标String对象
-     * @param format 转换格式
-     * @return 转换后的Date对象
+     * Method String转Date
+     *
+     * @param targetString of type String 目标String
+     * @param format of type String 转换格式
+     * @return Date
      */
     public static Date stringToDate(String targetString, String format) {
         if (StringUtils.isNotEmpty(targetString)) {
@@ -37,10 +41,11 @@ public final class DateTimeUtil {
     }
 
     /**
-     * Date转换为String
-     * @param targetDate 目标Date对象
-     * @param format 转换格式
-     * @return 转换后的String对象
+     * Method dateToString Date转String
+     *
+     * @param targetDate of type Date 目标Date
+     * @param format of type String 转换格式
+     * @return String
      */
     public static String dateToString(Date targetDate, String format) {
         if (targetDate == null) {

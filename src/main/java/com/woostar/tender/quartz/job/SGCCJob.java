@@ -9,19 +9,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.codecraft.webmagic.Spider;
 
 /**
- * @author huangs
- * @createtime 2018-06-26
- * @description
+ * Class SGCCJob
+ *
+ * @author huangshuo
+ * Created on 2018-06-26
  */
 public class SGCCJob extends BaseJob {
 
+    /**
+     * Field projectPipeline
+     */
     @Autowired
     private ProjectPipeline projectPipeline;
 
     /**
-     * 定时任务执行方法
-     * @param jobExecutionContext 定时任务内容
-     * @throws JobExecutionException 执行异常
+     * Method executeInternal 定时任务主方法
+     *
+     * @param jobExecutionContext of type JobExecutionContext
+     * @throws JobExecutionException when 定时任务异常
      */
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
