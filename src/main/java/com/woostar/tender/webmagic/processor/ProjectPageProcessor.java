@@ -1,6 +1,6 @@
 package com.woostar.tender.webmagic.processor;
 
-import com.woostar.tender.common.constant.Website;
+import com.woostar.tender.common.constant.WebsiteEnum;
 import com.woostar.tender.common.util.DateTimeUtil;
 import com.woostar.tender.model.ProjectDetail;
 import org.apache.commons.collections.CollectionUtils;
@@ -80,7 +80,7 @@ public class ProjectPageProcessor extends BasePageProcessor {
                 projectDetail.setTenderAnnounceTime(announcementReleaseTime);
                 projectDetail.setContactPerson(tenderContactPerson);
                 projectDetail.setContactPhone(tenderContactPersonPhone);
-                projectDetail.setSourceWebsite(Website.WHZBTB.getName());
+                projectDetail.setSourceWebsite(WebsiteEnum.WHZBTB.getName());
                 projectDetail.setSourceUrl(page.getUrl().toString());
                 projectDetail.setRemark(remark);
 //                projectDetail.setTenderProxyContactPerson(tenderProxyContactPerson);

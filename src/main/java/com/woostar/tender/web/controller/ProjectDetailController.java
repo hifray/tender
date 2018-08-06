@@ -52,9 +52,9 @@ public class ProjectDetailController{
      * @param pageSize of type int 分页大小
      * @param searchContent of type String 搜索内容
      * @param announceStatus of type int 公告状态
-     * @param sourceWebsite of type int 来源网站
-     * @param releaseTime of type String 公告发布时间
-     * @param deadline of type String 公告截止时间
+     * @param sourceWebsite of type String 来源网站字符串（用,拼接)
+     * @param startDate of type String 开始日期
+     * @param endDate of type String 结束日期
      * @return ServerResponse<PageInfo < ProjectDetail>>
      */
     @GetMapping("/list/search")
@@ -63,10 +63,10 @@ public class ProjectDetailController{
                                                               @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
                                                               @RequestParam(value = "searchContent", required = false) String searchContent,
                                                               @RequestParam(value = "announceStatus", required = false, defaultValue = "3") int announceStatus,
-                                                              @RequestParam(value = "sourceWebsite", required = false, defaultValue = "6") int sourceWebsite,
-                                                              @RequestParam(value = "releaseTime", required = false) String releaseTime,
-                                                              @RequestParam(value = "deadline", required = false) String deadline) {
-        return iProjectDetailService.searchList(pageNum, pageSize, searchContent, announceStatus, sourceWebsite, releaseTime, deadline);
+                                                              @RequestParam(value = "sourceWebsite", required = false) String sourceWebsite,
+                                                              @RequestParam(value = "startDate", required = false) String startDate,
+                                                              @RequestParam(value = "endDate", required = false) String endDate) {
+        return iProjectDetailService.searchList(pageNum, pageSize, searchContent, announceStatus, sourceWebsite, startDate, endDate);
     }
 
     /**

@@ -23,12 +23,12 @@ public interface IProjectDetailService {
      * @param pageSize of type int 分页大小
      * @param searchContent of type String 搜索内容
      * @param announceStatus of type int 公告状态
-     * @param sourceWebsite of type int 来源网站
-     * @param releaseTime of type String 公告发布时间
-     * @param deadline of type String 公告截止时间
+     * @param sourceWebsite of type String 来源网站字符串(用,拼接)
+     * @param startDate of type String 开始日期
+     * @param endDate of type String 结束日期
      * @return ServerResponse<PageInfo < ProjectDetail>>
      */
-    ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchContent, int announceStatus, int sourceWebsite, String releaseTime, String deadline);
+    ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchContent, int announceStatus, String sourceWebsite, String startDate, String endDate);
 
     /**
      * Method searchAutoComplete 自动补全搜索内容

@@ -11,20 +11,11 @@
 	<script th:src="@{/assets/vue-2.5.16/vue.js}"></script>
 	<script th:src="@{/assets/element-ui/index.js}"></script>
 	<style>
-		.el-select .el-input {
-			min-width: 130px;
-		}
 		.el-table .even-row {
 			background: #E5F1ED;
 		}
 		.el-table .odd-row {
 			background: #F9F9F9;
-		}
-		.input-with-select .el-input-group__prepend {
-			background-color: #fff;
-		}
-		.inline-input {
-			min-width: 400px;
 		}
 		.el-table .header-cell {
 			background: #4FA9A0;
@@ -42,30 +33,29 @@
 <div id="tender">
 	<el-container>
 		<el-header>
-			<el-row style="margin-top: 15px">
-				<el-col :span="4">
+			<el-row style="margin-top: 15px" :gutter="5">
+				<el-col :xl="5" :sm="4">
 					<el-autocomplete
-							select-when-unmatched clearable
-							prefix-icon="el-icon-search" class="inline-input"
-							:placeholder="conditions.search.contentHint"
-							:fetch-suggestions="searchContentAutoComplete"
-							v-model="conditions.search.searchContent">
+						prefix-icon="el-icon-search"
+						:placeholder="conditions.search.contentHint"
+						:fetch-suggestions="searchContentAutoComplete"
+						v-model="conditions.search.searchContent">
 					</el-autocomplete>
 				</el-col>
-				<el-col :span="2">
+				<el-col :xl="3" :sm="2">
 					<el-select
 						clearable
 						:placeholder="conditions.status.statusHint"
 						v-model="conditions.status.announceStatus">
 						<el-option
-								v-for="item in conditions.status.options"
-								:key="item.value"
-								:label="item.label"
-								:value="item.value">
+							v-for="item in conditions.status.options"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value">
 						</el-option>
 					</el-select>
 				</el-col>
-				<el-col :span="4">
+				<el-col :xl="4" :sm="4">
 					<el-select
 						multiple collapse-tags
 						:placeholder="conditions.source.sourceHint"
@@ -78,52 +68,46 @@
 						</el-option>
 					</el-select>
 				</el-col>
-				<el-col :span="3">
+				<el-col :xl="6" :sm="8">
 					<el-date-picker
-						type="datetime" align="right"
-						:placeholder="conditions.date.releaseTimeHint"
-						:value-format="conditions.date.dateFormat"
-						:picker-options="conditions.date.options"
-						v-model="conditions.date.releaseTime">
+						type="daterange" unlink-panels
+						:range-separator="conditions.date.separator"
+						:start-placeholder="conditions.date.startDateHint"
+						:end-placeholder="conditions.date.endDateHint"
+						:format="conditions.date.format"
+						:value-format="conditions.date.valueFormat"
+						v-model="conditions.date.dateRange"
+						:picker-options="conditions.date.options">
 					</el-date-picker>
 				</el-col>
-				<el-col :span="3">
-					<el-date-picker
-						type="datetime" align="right"
-						:placeholder="conditions.date.deadlineHint"
-						:value-format="conditions.date.dateFormat"
-						:picker-options="conditions.date.options"
-						v-model="conditions.date.deadline">
-					</el-date-picker>
-				</el-col>
-				<el-col :span="2">
+				<el-col :xl="2" :sm="2">
 					<el-button
-						type="primary" icon="el-icon-search" style="float: right"
-						:loading="loading"
-						@click="clickSearchButton">搜索项目</el-button>
+						type="primary" icon="el-icon-search"
+						:loading="table.loading"
+						@click="clickSearchButton">搜索</el-button>
 				</el-col>
-				<el-col :span="2">
+				<el-col :xl="2" :sm="2">
 					<el-button
-						type="danger" icon="el-icon-delete" style="float: right"
-						@click="clickClearSearchButton">清空条件</el-button>
+						type="danger" icon="el-icon-delete"
+						@click="clickClearSearchButton">清空</el-button>
 				</el-col>
-				<el-col :span="1">
+				<el-col :xl="1" :sm="1">
 					<el-tooltip
 						placement="top" effect="light"
 						:content="exportExcel.clearButtonHint">
 						<el-button
-							circle type="danger" icon="el-icon-delete" style="float: right"
+							circle type="danger" icon="el-icon-delete"
 							:disabled="exportExcel.clearButtonDisabled"
 							@click="clickClearSelectedButton">
 						</el-button>
 					</el-tooltip>
 				</el-col>
-				<el-col :span="1">
+				<el-col :xl="1" :sm="1">
 					<el-tooltip
 						placement="top" effect="light"
 						:content="exportExcel.exportButtonHint">
 						<el-button
-							circle type="primary" icon="el-icon-document" style="float: right"
+							circle type="info" icon="el-icon-document"
 							@click="clickExportExcelButton">
 						</el-button>
 					</el-tooltip>
@@ -158,40 +142,42 @@
 			</el-dialog>
 		</el-header>
 		<el-main>
-			<el-card shadow="hover" :body-style="projectTableBodyStyle">
+			<el-card shadow="hover" :body-style="table.bodyStyle">
 				<el-table
-						ref="projectTable"
-						:data="projectTableData"
-						:row-class-name="tableRowClassName"
-						v-loading="loading"
-						row-key="projectId"
-						@sort-change="getListSorted"
-						@selection-change="getListSelected"
-						@row-dblclick="rowDoubleClick"
-						style="width: 100%"
-						header-cell-class-name="header-cell">
+					ref="projectTable"
+					:data="table.data"
+					:row-class-name="tableRowClassName"
+					v-loading="table.loading"
+					row-key="projectId"
+					@sort-change="getListSorted"
+					@selection-change="getListSelected"
+					@row-dblclick="rowDoubleClick"
+					style="width: 100%"
+					header-cell-class-name="header-cell">
 					<!-- 序号 -->
 					<el-table-column label="序号" align="center" fixed="left" >
 						<template slot-scope="scope">
 							<div>{{ scope.$index + 1 }}</div>
 						</template>
 					</el-table-column>
-					<!-- 报建名称 -->
-					<el-table-column prop="reportName" label="报建名称" min-width="250" align="center" show-overflow-tooltip fixed></el-table-column>
+					<!-- 来源网站 -->
+					<el-table-column prop="sourceWebsite" label="来源网站" min-width="200" align="center" fixed></el-table-column>
+					<!-- 项目名称 -->
+					<el-table-column prop="projectName" label="项目名称" min-width="250" align="center" show-overflow-tooltip fixed></el-table-column>
 					<!-- 公告状态 -->
-					<el-table-column prop="announcementReleaseTime" label="公告状态" min-width="150" align="center" :formatter="announcementStatusFormatter" fixed></el-table-column>
+					<el-table-column prop="tenderDeadline" label="公告状态" min-width="150" align="center" :formatter="announceStatusFormatter" fixed></el-table-column>
+					<!-- 项目编号 -->
+					<el-table-column prop="projectId" label="项目编号" min-width="200" align="center" show-overflow-tooltip></el-table-column>
 					<!-- 公告发布时间 -->
-					<el-table-column prop="announcementReleaseTime" label="公告发布时间" min-width="220" align="center"  :formatter="announcementReleaseTimeFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
+					<el-table-column prop="tenderAnnounceTime" label="公告发布日期" min-width="220" align="center"  :formatter="announceTimeFormatter" sortable="custom" show-overflow-tooltip></el-table-column>
 					<!-- 报名截止时间 -->
-					<el-table-column prop="tenderDeadline" label="报名截止时间" min-width="220" align="center"  :formatter="tenderDeadlineFormatter" sortable="custom" show-overflow-tooltip fixed></el-table-column>
-					<!-- 招标项目名称 -->
-					<el-table-column prop="tenderProjectName" label="招标项目名称" min-width="250" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="tenderDeadline" label="报名截止日期" min-width="220" align="center"  :formatter="deadlineFormatter" sortable="custom" show-overflow-tooltip></el-table-column>
 					<!-- 招标内容说明 -->
 					<el-table-column label="招标内容说明" min-width="400" align="center">
 						<template slot-scope="scope">
 							<el-tooltip trigger="hover" placement="top" content="点击查看详细内容">
-								<el-popover trigger="click" placement="top" width="500" :title="scope.row.reportName" :content="scope.row.tenderProjectDescription">
-									<div slot="reference" style="white-space: nowrap">{{ scope.row.tenderProjectDescription }}</div>
+								<el-popover trigger="click" placement="top" width="500" :title="scope.row.projectName" :content="scope.row.projectDescription">
+									<div slot="reference" style="white-space: nowrap">{{ scope.row.projectDescription }}</div>
 								</el-popover>
 							</el-tooltip>
 						</template>
@@ -200,30 +186,14 @@
 					<el-table-column label="招标人联系人" min-width="150" align="center" show-overflow-tooltip>
 						<template slot-scope="scope">
 							<el-popover trigger="hover" placement="top">
-								<p>姓名: {{ scope.row.tenderContactPerson }}</p>
-								<p>电话: {{ scope.row.tenderContactPersonPhone }}</p>
+								<p>姓名: {{ scope.row.contactPerson }}</p>
+								<p>电话: {{ scope.row.contactPhone }}</p>
 								<div slot="reference" class="name-wrapper">
-									<el-tag size="medium">{{ scope.row.tenderContactPerson }}</el-tag>
+									<el-tag size="medium">{{ scope.row.contactPerson }}</el-tag>
 								</div>
 							</el-popover>
 						</template>
 					</el-table-column>
-					<!-- 招标人代理联系人 -->
-					<el-table-column label="招标人代理联系人" min-width="150" align="center" show-overflow-tooltip>
-						<template slot-scope="scope">
-							<el-popover trigger="hover" placement="top">
-								<p>姓名: {{ scope.row.tenderProxyContactPerson }}</p>
-								<p>电话: {{ scope.row.tenderProxyContactPersonPhone }}</p>
-								<div slot="reference" class="name-wrapper">
-									<el-tag size="medium" type="warning">{{ scope.row.tenderProxyContactPerson }}</el-tag>
-								</div>
-							</el-popover>
-						</template>
-					</el-table-column>
-					<!-- 报建编号 -->
-					<el-table-column prop="reportNumber" label="报建编号" min-width="200" align="center"></el-table-column>
-					<!-- 招标登记编号 -->
-					<el-table-column prop="tenderRegistrationNumber" label="招标登记编号" min-width="200" align="center" show-overflow-tooltip></el-table-column>
 					<!-- 备注 -->
 					<el-table-column prop="remark" label="备注" min-width="200" align="center">
 						<template slot-scope="scope">
@@ -262,33 +232,17 @@
 	let vue = new Vue({
 		el: '#tender',
 		data: {
-			loading: true,
-			projectTableData: null,
-			projectTableBodyStyle: {
-				padding: '0px'
-			},
-			selections: null,
-			pagination: {
-				pageNum: 1,
-				pageSize: 10,
-				pageSizes: [10, 20, 50, 100],
-				layout: 'total, sizes, prev, pager, next, jumper',
-				prevText: '上一页',
-				nextText: '下一页',
-				total: 0
-			},
 			conditions: {
 				search: {
 					searchContent: '',
-					contentHint: '请输入内容',
+					contentHint: '请输入项目名称',
 				},
 				status: {
 					announceStatus: '',
 					statusHint: '公告状态',
 					options: [
 						{ value: 1, label: '报名中' },
-						{ value: 2, label: '已截止' },
-						{ value: 3, label: '全部' }
+						{ value: 2, label: '已截止' }
 					]
 				},
 				source: {
@@ -299,35 +253,40 @@
 						{ value: 2, label: '采购网与招标网' },
 						{ value: 3, label: '国家电网电子商务平台' },
 						{ value: 4, label: '湖北省公共资源交易中心' },
-						{ value: 5, label: '武汉市公共资源交易中心' },
-						{ value: 6, label: '全部网站' }
+						{ value: 5, label: '武汉市公共资源交易中心' }
 					]
 				},
 				date: {
-					releaseTime: '',
-					releaseTimeHint: '公告开始时间',
-					deadline: '',
-					deadlineHint: '公告截止时间',
-					dateFormat: 'yyyy-MM-dd HH:mm:ss',
+					dateRange: null,
+					separator: '至',
+					startDateHint: '开始日期',
+					endDateHint: '结束日期',
+					format: 'yyyy年 MM月dd日',
+					valueFormat: 'yyyy-MM-dd HH:mm:ss',
 					options: {
 						shortcuts: [{
-							text: '今天',
-							onClick: picker => {
-								picker.$emit('pick', new Date());
+							text: '最近一周',
+							onClick(picker) {
+								const end = new Date();
+								const start = new Date();
+								start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+								picker.$emit('pick', [start, end]);
 							}
 						}, {
-							text: '昨天',
-							onClick: picker => {
-								const date = new Date();
-								date.setTime(date.getTime() - 3600 * 1000 * 24);
-								picker.$emit('pick', date);
+							text: '最近一个月',
+							onClick(picker) {
+								const end = new Date();
+								const start = new Date();
+								start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+								picker.$emit('pick', [start, end]);
 							}
 						}, {
-							text: '一周前',
-							onClick: picker => {
-								const date = new Date();
-								date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-								picker.$emit('pick', date);
+							text: '最近三个月',
+							onClick(picker) {
+								const end = new Date();
+								const start = new Date();
+								start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+								picker.$emit('pick', [start, end]);
 							}
 						}]
 					},
@@ -344,128 +303,158 @@
 					count: 0
 				}
 			},
-			sortConditions: {
-				sortColumn: '',
-				sortOrder: ''
-			}
+			table: {
+				loading: true,
+				data: null,
+				bodyStyle: {
+					padding: '0px'
+				},
+				selections: null,
+				sortConditions: {
+					sortColumn: '',
+					sortOrder: ''
+				}
+			},
+			pagination: {
+				pageNum: 1,
+				pageSize: 10,
+				pageSizes: [10, 20, 50, 100],
+				layout: 'total, sizes, prev, pager, next, jumper',
+				prevText: '上一页',
+				nextText: '下一页',
+				total: 0
+			},
 		},
 		methods: {
-			searchList: function({pageNum, pageSize, searchCondition, searchContent, sortColumn, sortOrder, announcementReleaseTime, tenderDeadline, filter}) {
-				vue.loading = true;
+			searchList: function({pageNum, pageSize, searchContent, announceStatus, sourceWebsite, startDate, endDate}) {
+				vue.table.loading = true;
 				http.get("/tender/list/search",
-						{
-							pageNum: pageNum,
-							pageSize: pageSize,
-							searchCondition: searchCondition,
-							searchContent: searchContent,
-							sortColumn: sortColumn,
-							sortOrder: sortOrder,
-							announcementReleaseTime: announcementReleaseTime,
-							tenderDeadline: tenderDeadline,
-							filter: vue.conditions.status.announceStatus
-						},
-						success => {
-							let data = success.data;
-							vue.projectTableData = data.list;
-							vue.pagination.total = data.total;
-							vue.loading = false;
-						}
+					{
+						pageNum: pageNum,
+						pageSize: pageSize,
+						searchContent: searchContent,
+						announceStatus: announceStatus,
+						sourceWebsite: sourceWebsite,
+						startDate: startDate,
+						endDate: endDate,
+					},
+					success => {
+						let data = success.data;
+						vue.table.data = data.list;
+						vue.pagination.total = data.total;
+						vue.table.loading = false;
+					}
 				)
 			},
 			searchContentAutoComplete: function(searchContent, callback) {
 				http.get("/tender/list/search/auto_complete",
-						{
-							searchContent: searchContent
-						},
-						success => {
-							callback(success.data);
-						}
+					{
+						searchContent: searchContent
+					},
+					success => {
+						callback(success.data);
+					}
 				)
 			},
+			// todo 排序
 			getListSorted: function(sortCondition) {
-				vue.sortConditions.sortColumn = sortCondition.prop;
-				vue.sortConditions.sortOrder = sortCondition.order;
-				vue.searchList({
-					pageNum: 1,
-					pageSize: vue.pagination.pageSize,
-					searchCondition: vue.searchConditions.searchCondition,
-					searchContent: vue.searchConditions.searchContent,
-					sortColumn: vue.sortConditions.sortColumn,
-					sortOrder: vue.sortConditions.sortOrder,
-					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
-					tenderDeadline: vue.dateTimePicker.tenderDeadline,
-					filter: vue.announcementStatus.value
-				});
 			},
 			getListSelected: function(selection) {
-				vue.selections = selection;
+				vue.table.selections = selection;
 				vue.exportExcel.clearButtonDisabled = selection.length <= 0;
 				vue.exportExcel.confirmDialog.data = [];
 				for (let item of selection) {
 					vue.exportExcel.confirmDialog.data.push(item);
 				}
-				if (vue.exportExcel.confirmDialog.data !== null) {
+				if (vue.exportExcel.confirmDialog.data != null) {
 					vue.exportExcel.confirmDialog.count = vue.exportExcel.confirmDialog.data.length;
 				}
 			},
+			// todo sourceUrl
 			rowDoubleClick: function(row, event) {
-				window.open("http://www.jy.whzbtb.com/V2PRTS/TendererNoticeInfoDetail.do?id="+ row.projectId +"");
+				window.open(row.sourceUrl);
 			},
 			changePageSize: function(pageSize) {
 				vue.pagination.pageSize = pageSize;
 				vue.pagination.pageNum = 1;
+				let sourceWebsite = '';
+				if (vue.conditions.source.sourceWebsite != null) {
+					for (let i = 0; i < vue.conditions.source.sourceWebsite.length; i++) {
+						sourceWebsite += vue.conditions.source.sourceWebsite[i] + ',';
+					}
+				}
+				let startDate = '';
+				let endDate = '';
+				if (vue.conditions.date.dateRange != null) {
+					startDate = vue.conditions.date.dateRange[0];
+					endDate = vue.conditions.date.dateRange[1];
+				}
 				vue.searchList({
 					pageNum: vue.pagination.pageNum,
 					pageSize: pageSize,
-					searchCondition: vue.searchConditions.searchCondition,
-					searchContent: vue.searchConditions.searchContent,
-					sortColumn: vue.sortConditions.sortColumn,
-					sortOrder: vue.sortConditions.sortOrder,
-					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
-					tenderDeadline: vue.dateTimePicker.tenderDeadline,
-					filter: vue.announcementStatus.value
+					searchContent: vue.conditions.search.searchContent,
+					announceStatus: vue.conditions.status.announceStatus,
+					sourceWebsite: sourceWebsite,
+					startDate: startDate,
+					endDate: endDate
 				});
 			},
 			changePageNum: function(pageNum) {
 				vue.pagination.pageNum = pageNum;
+				let sourceWebsite = '';
+				if (vue.conditions.source.sourceWebsite != null) {
+					for (let i = 0; i < vue.conditions.source.sourceWebsite.length; i++) {
+						sourceWebsite += vue.conditions.source.sourceWebsite[i] + ',';
+					}
+				}
+				let startDate = '';
+				let endDate = '';
+				if (vue.conditions.date.dateRange != null) {
+					startDate = vue.conditions.date.dateRange[0];
+					endDate = vue.conditions.date.dateRange[1];
+				}
 				vue.searchList({
 					pageNum: pageNum,
 					pageSize: vue.pagination.pageSize,
-					searchCondition: vue.searchConditions.searchCondition,
-					searchContent: vue.searchConditions.searchContent,
-					sortColumn: vue.sortConditions.sortColumn,
-					sortOrder: vue.sortConditions.sortOrder,
-					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
-					tenderDeadline: vue.dateTimePicker.tenderDeadline,
-					filter: vue.announcementStatus.value
+					searchContent: vue.conditions.search.searchContent,
+					announceStatus: vue.conditions.status.announceStatus,
+					sourceWebsite: sourceWebsite,
+					startDate: startDate,
+					endDate: endDate
 				});
 			},
-			changeSearchCondition: function(searchCondition) {
-				vue.searchConditions.contentHint = '请输入' + (searchCondition === '' ? "内容" : searchCondition);
-			},
 			clickSearchButton: function() {
+				console.log(vue.conditions);
+				let sourceWebsite = '';
+				if (vue.conditions.source.sourceWebsite != null) {
+					for (let i = 0; i < vue.conditions.source.sourceWebsite.length; i++) {
+						sourceWebsite += vue.conditions.source.sourceWebsite[i] + ',';
+					}
+				}
+				let startDate = '';
+				let endDate = '';
+				if (vue.conditions.date.dateRange != null) {
+					startDate = vue.conditions.date.dateRange[0];
+					endDate = vue.conditions.date.dateRange[1];
+				}
 				vue.searchList({
 					pageNum: 1,
 					pageSize: vue.pagination.pageSize,
-					searchCondition: vue.searchConditions.searchCondition,
-					searchContent: vue.searchConditions.searchContent,
-					sortColumn: vue.sortConditions.sortColumn,
-					sortOrder: vue.sortConditions.sortOrder,
-					announcementReleaseTime: vue.dateTimePicker.announcementReleaseTime,
-					tenderDeadline: vue.dateTimePicker.tenderDeadline,
-					filter: vue.announcementStatus.value
+					searchContent: vue.conditions.search.searchContent,
+					announceStatus: vue.conditions.status.announceStatus,
+					sourceWebsite: sourceWebsite,
+					startDate: startDate,
+					endDate: endDate
 				});
 			},
 			clickClearSearchButton: function() {
-				vue.searchConditions.searchCondition = '';
-				vue.searchConditions.searchContent = '';
-				vue.dateTimePicker.announcementReleaseTime = '';
-				vue.dateTimePicker.tenderDeadline = '';
-				vue.announcementStatus.value = null;
-				vue.$refs.projectTable.clearSort();
+				vue.conditions.search.searchContent = '';
+				vue.conditions.status.announceStatus = '';
+				vue.conditions.source.sourceWebsite = [];
+				vue.conditions.date.dateRange = null;
 			},
 			clickExportExcelButton: function() {
-				if (vue.selections === null || vue.selections.length === 0) {
+				if (vue.table.selections == null || vue.table.selections.length === 0) {
 					this.$message({
 						type: 'warning',
 						center: true,
@@ -474,7 +463,7 @@
 					return;
 				}
 				let projectIds = '';
-				for (let projectDetail of vue.selections) {
+				for (let projectDetail of vue.table.selections) {
 					projectIds += projectDetail.projectId + ',';
 				}
 				http.post("/tender/list/excel",
@@ -508,12 +497,12 @@
 			},
 			clickRemoveSelectedButton: function(index, row) {
 				vue.exportExcel.confirmDialog.data.splice(index, 1);
-				if (vue.exportExcel.confirmDialog.data !== null) {
+				if (vue.exportExcel.confirmDialog.data != null) {
 					vue.exportExcel.confirmDialog.count = vue.exportExcel.confirmDialog.data.length;
 				}
-				vue.selections = vue.exportExcel.confirmDialog.data;
+				vue.table.selections = vue.exportExcel.confirmDialog.data;
 				vue.$refs.projectTable.toggleRowSelection(row, false);
-				if (vue.selections === null || vue.selections.length === 0) {
+				if (vue.table.selections == null || vue.table.selections.length === 0) {
 					vue.exportExcel.clearButtonDisabled = true;
 					vue.exportExcel.confirmDialog.visible = false;
 				}
@@ -529,7 +518,7 @@
 			},
 			clickConfirmExportExcelButton: function() {
 				let projectIds = '';
-				for (let projectDetail of vue.selections) {
+				for (let projectDetail of vue.table.selections) {
 					projectIds += projectDetail.projectId + ',';
 				}
 				vue.exportExcel.confirmDialog.visible = false;
@@ -546,18 +535,18 @@
 				}
 			},
 			// formatter
-			tenderDeadlineFormatter: function(row) {
+			deadlineFormatter: function(row) {
 				let dateTime = row.tenderDeadline;
-				return dateTime === null ? '' : moment(dateTime).format('YYYY年 MM月DD日 HH时mm分');
+				return dateTime == null ? '' : moment(dateTime).format('YYYY年 MM月DD日');
 			},
-			announcementReleaseTimeFormatter: function(row) {
-				let dateTime = row.announcementReleaseTime;
-				return dateTime === null ? '' : moment(dateTime).format('YYYY年 MM月DD日 HH时mm分');
+			announceTimeFormatter: function(row) {
+				let dateTime = row.tenderAnnounceTime;
+				return dateTime == null ? '' : moment(dateTime).format('YYYY年 MM月DD日');
 			},
-			announcementStatusFormatter: function(row) {
+			announceStatusFormatter: function(row) {
 				let dateTime = row.tenderDeadline;
 				let now = moment();
-				if (dateTime === null) {
+				if (dateTime == null) {
 					return '';
 				}
 				if (moment(dateTime).isAfter(now)) {
@@ -569,14 +558,11 @@
 			timeAgoFormatter: function (row) {
 				let dateTime = row.createTime;
 				moment.locale('zh-cn');
-				return dateTime === null ? '' : moment(dateTime).fromNow();
+				return dateTime == null ? '' : moment(dateTime).fromNow();
 			}
 		}
 	});
-	vue.searchList({
-		sortOrder: 'descending',
-		sortColumn: 'createTime'
-	});
+	vue.searchList({});
 </script>
 </body>
 </html>

@@ -1,10 +1,9 @@
 package com.woostar.tender.web.service.impl;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.woostar.tender.common.excel.ProjectDetailExcel;
+import com.woostar.tender.common.constant.AnnounceStatusEnum;
+import com.woostar.tender.common.constant.WebsiteEnum;
 import com.woostar.tender.common.http.ServerResponse;
 import com.woostar.tender.common.http.StatusCodeEnum;
 import com.woostar.tender.common.util.DateTimeUtil;
@@ -13,16 +12,12 @@ import com.woostar.tender.model.ProjectDetail;
 import com.woostar.tender.model.example.ProjectDetailExample;
 import com.woostar.tender.web.service.IProjectDetailService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -61,14 +56,61 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
      * @param pageSize of type int 分页大小
      * @param searchContent of type String 搜索内容
      * @param announceStatus of type int 公告状态
-     * @param sourceWebsite of type int 来源网站
-     * @param releaseTime of type String 公告发布时间
-     * @param deadline of type String 公告截止时间
+     * @param sourceWebsite of type String 来源网站字符串(用,拼接)
+     * @param startDate of type String 开始日期
+     * @param endDate of type String 结束日期
      * @return ServerResponse<PageInfo < ProjectDetail>>
      */
     @Override
-    public ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchContent, int announceStatus, int sourceWebsite, String releaseTime, String deadline) {
-        return null;
+    public ServerResponse<PageInfo<ProjectDetail>> searchList(int pageNum, int pageSize, String searchContent, int announceStatus, String sourceWebsite, String startDate, String endDate) {
+        ProjectDetailExample sqlExample = new ProjectDetailExample();
+        ProjectDetailExample.Criteria sqlCriteria = sqlExample.createCriteria();
+        // 项目名称
+        if (StringUtils.isNotEmpty(searchContent)) {
+            sqlCriteria.andProjectNameLike(searchContent);
+        }
+        // 公告状态
+        if (announceStatus != AnnounceStatusEnum.ALL.getCode()) {
+            if (announceStatus == AnnounceStatusEnum.PROCESSING.getCode()) {
+                sqlCriteria.andTenderDeadlineGreaterThan(new Date());
+            }
+            else if (announceStatus == AnnounceStatusEnum.CLOSED.getCode()) {
+                sqlCriteria.andTenderDeadlineLessThan(new Date());
+            }
+        }
+        // 来源网站
+        if (StringUtils.isNotEmpty(sourceWebsite)) {
+            String[] sourceWebsites = sourceWebsite.split(",");
+            List<String> sourceWebsiteCodeList = new ArrayList<>();
+            for (String sourceWebsiteStr : sourceWebsites) {
+                for (WebsiteEnum websiteEnum : WebsiteEnum.values()) {
+                    if (StringUtils.equals(websiteEnum.getCode(), sourceWebsiteStr)) {
+                        sourceWebsiteCodeList.add(websiteEnum.getName());
+                        break;
+                    }
+                }
+            }
+            sqlCriteria.andSourceWebsiteIn(sourceWebsiteCodeList);
+        }
+        // 时间范围
+        if (StringUtils.isNotEmpty(startDate)) {
+            sqlCriteria.andTenderAnnounceTimeGreaterThan(DateTimeUtil.stringToDate(startDate, DateTimeUtil.DEFAULT_FORMAT));
+        }
+        if (StringUtils.isNotEmpty(endDate)) {
+            sqlCriteria.andTenderDeadlineLessThan(DateTimeUtil.stringToDate(endDate, DateTimeUtil.DEFAULT_FORMAT));
+        }
+        PageInfo<ProjectDetail> pageInfo = null;
+        try {
+            PageHelper.startPage(pageNum, pageSize);
+            List<ProjectDetail> resultList = iProjectDetailMapper.selectByExample(sqlExample);
+            pageInfo = new PageInfo<>(resultList);
+        } catch (Exception e) {
+            LOGGER.error("项目列表查询失败", e);
+        }
+        return new ServerResponse.Builder<PageInfo<ProjectDetail>>(StatusCodeEnum.OK.getCode())
+                .msg(StringUtils.EMPTY)
+                .data(pageInfo)
+                .build();
     }
 
     /**
