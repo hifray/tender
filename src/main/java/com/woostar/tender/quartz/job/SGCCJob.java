@@ -35,7 +35,7 @@ public class SGCCJob extends BaseJob {
             Spider.create(new SGCCPageProcessor())
                     .addUrl(SGCCPageProcessor.LIST_URL + SGCCPageProcessor.LIST_URL_PARAMETERS)
                     .addPipeline(projectPipeline)
-                    .thread(1)
+                    //.thread(1)
                     .setExitWhenComplete(true)
                     .run();
         } catch (Exception e) {

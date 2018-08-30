@@ -34,10 +34,10 @@ public class BIDCHANCEJob extends BaseJob {
         try {
             Spider.create(new BIDCHANCEPageProcessor())
                     // 发送登陆请求
-                    .addUrl("http://www.bidchance.com/logon.do?pwd=wxdq1234&userid=whwxdq")
+                    //.addUrl("http://www.bidchance.com/logon.do?pwd=wxdq1234&userid=whwxdq")
                     .addUrl(BIDCHANCEPageProcessor.LIST_URL)
                     .addPipeline(projectPipeline)
-                    .thread(1)
+                    //.thread(1)
                     .setExitWhenComplete(true)
                     .run();
         } catch (Exception e) {

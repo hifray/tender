@@ -36,7 +36,7 @@ public class WHZBTBJob extends BaseJob {
             Spider.create(new WHZBTBPageProcessor())
                     .addUrl(WHZBTBPageProcessor.LIST_URL + WHZBTBPageProcessor.DETAIL_URL_PARAMETER)
                     .addPipeline(projectPipeline)
-                    .thread(1)
+                    //.thread(1)
                     .setExitWhenComplete(true)
                     .run();
         } catch (Exception e) {
