@@ -1,9 +1,12 @@
 package com.woostar.tender.web.service.impl;
 
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.woostar.tender.common.constant.AnnounceStatusEnum;
 import com.woostar.tender.common.constant.WebsiteEnum;
+import com.woostar.tender.common.excel.ProjectDetailExcel;
 import com.woostar.tender.common.http.ServerResponse;
 import com.woostar.tender.common.http.StatusCodeEnum;
 import com.woostar.tender.common.util.DateTimeUtil;
@@ -12,12 +15,16 @@ import com.woostar.tender.model.ProjectDetail;
 import com.woostar.tender.model.example.ProjectDetailExample;
 import com.woostar.tender.web.service.IProjectDetailService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -145,43 +152,43 @@ public class ProjectDetailServiceImpl implements IProjectDetailService {
      */
     @Override
     public void exportExcel(HttpServletResponse response, String projectIds) {
-//        String[] projectIdList = projectIds.split(",");
-//        List<ProjectDetailExcel> list = new ArrayList<>();
-//        if (projectIdList.length > 0) {
-//            for (String projectId : projectIdList) {
-//                ProjectDetail projectDetail = iProjectDetailMapper.selectByPrimaryKey(projectId);
-//                ProjectDetailExcel projectDetailExcel = new ProjectDetailExcel();
-//                projectDetailExcel.setReportName(projectDetail.getReportName());
-//                projectDetailExcel.setReportNumber(projectDetail.getReportNumber());
-//                projectDetailExcel.setTenderProjectName(projectDetail.getTenderProjectName());
-//                projectDetailExcel.setTenderRegistrationNumber(projectDetail.getTenderRegistrationNumber());
-//                projectDetailExcel.setTenderProjectDescription(projectDetail.getTenderProjectDescription());
-//                projectDetailExcel.setTenderContactPerson(projectDetail.getTenderContactPerson());
-//                projectDetailExcel.setTenderContactPhone(projectDetail.getTenderContactPersonPhone());
-//                projectDetailExcel.setTenderProxyContactPerson(projectDetail.getTenderProxyContactPerson());
-//                projectDetailExcel.setTenderProxyContactPhone(projectDetail.getTenderProxyContactPersonPhone());
-//                projectDetailExcel.setTenderDeadline(projectDetail.getTenderDeadline());
-//                projectDetailExcel.setAnnouncementReleaseTime(projectDetail.getAnnouncementReleaseTime());
-//                projectDetailExcel.setRemark(projectDetail.getRemark());
-//                list.add(projectDetailExcel);
-//            }
-//        }
-//        // 创建excel文档
-//        HSSFWorkbook workbook = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("招投标项目信息", "招投标项目"), ProjectDetailExcel.class, list);
-//        // todo: 设置excel样式
-//        // 导出到excel文件
-//        String fileNameSuffix = DateTimeUtil.dateToString(new Date(), "yyyyMMddHHmmss");
-//        String fileName = "招标项目信息_"+ fileNameSuffix +".xls";
-//        response.setContentType("application/ms-excel;charset=UTF-8");
-//        try {
-//            response.setHeader("Content-Disposition", "attachment;filename=".concat(String.valueOf(URLEncoder.encode(fileName, "UTF-8"))));
-//        } catch (UnsupportedEncodingException e) {
-//            LOGGER.error("文件编码格式不支持", e);
-//        }
-//        try {
-//            workbook.write(response.getOutputStream());
-//        } catch (IOException e) {
-//            LOGGER.error("excel文件导出错误", e);
-//        }
+        String[] projectIdList = projectIds.split(",");
+        List<ProjectDetailExcel> list = new ArrayList<>();
+        if (projectIdList.length > 0) {
+            for (String projectId : projectIdList) {
+                ProjectDetailExample sqlExample = new ProjectDetailExample();
+                sqlExample.createCriteria().andProjectIdEqualTo(projectId);
+                ProjectDetail projectDetail = iProjectDetailMapper.selectByExample(sqlExample).get(0);
+                ProjectDetailExcel projectDetailExcel = new ProjectDetailExcel();
+                projectDetailExcel.setProjectName(projectDetail.getProjectName());
+                projectDetailExcel.setProjectId(projectDetail.getProjectId());
+                projectDetailExcel.setProjectDescription(projectDetail.getProjectDescription());
+                projectDetailExcel.setTenderAnnounceTime(projectDetail.getTenderAnnounceTime());
+                projectDetailExcel.setTenderDeadline(projectDetail.getTenderDeadline());
+                projectDetailExcel.setContactPerson(projectDetail.getContactPerson());
+                projectDetailExcel.setContactPhone(projectDetail.getContactPhone());
+                projectDetailExcel.setSourceWebsite(projectDetail.getSourceWebsite());
+                projectDetailExcel.setRemark(projectDetail.getRemark());
+                projectDetailExcel.setTenderDeadline(projectDetail.getTenderDeadline());
+                list.add(projectDetailExcel);
+            }
+        }
+        // 创建excel文档
+        HSSFWorkbook workbook = (HSSFWorkbook) ExcelExportUtil.exportExcel(new ExportParams("招投标项目信息", "招投标项目"), ProjectDetailExcel.class, list);
+        // todo: 设置excel样式
+        // 导出到excel文件
+        String fileNameSuffix = DateTimeUtil.dateToString(new Date(), "yyyyMMddHHmmss");
+        String fileName = "招标项目信息_"+ fileNameSuffix +".xls";
+        response.setContentType("application/ms-excel;charset=UTF-8");
+        try {
+            response.setHeader("Content-Disposition", "attachment;filename=".concat(String.valueOf(URLEncoder.encode(fileName, "UTF-8"))));
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error("文件编码格式不支持", e);
+        }
+        try {
+            workbook.write(response.getOutputStream());
+        } catch (IOException e) {
+            LOGGER.error("excel文件导出错误", e);
+        }
     }
 }

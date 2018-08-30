@@ -2,22 +2,23 @@ package com.woostar.tender.quartz.job;
 
 import com.woostar.tender.common.util.DateTimeUtil;
 import com.woostar.tender.webmagic.pipeline.ProjectPipeline;
-import com.woostar.tender.webmagic.processor.SGCCPageProcessor;
+import com.woostar.tender.webmagic.processor.WHZBTBPageProcessor;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import us.codecraft.webmagic.Spider;
 
 /**
- * Class SGCCJob
+ * Class WHZBTBJob
  *
  * @author huangshuo
- * Created on 2018-06-26
+ * Created on 2018-06-01
  */
-public class SGCCJob extends BaseJob {
+public class WHZBTBJob extends BaseJob {
 
     /**
      * Field projectPipeline
+     * 注入ProjectPipeline(Job类必须有默认的无参构造器，因而此处不可用构造器注入，否则Job将无法实例化)
      */
     @Autowired
     private ProjectPipeline projectPipeline;
@@ -32,8 +33,8 @@ public class SGCCJob extends BaseJob {
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         LOGGER.info("定时任务已启动("+ DateTimeUtil.dateToString(jobExecutionContext.getFireTime(), DateTimeUtil.DEFAULT_FORMAT) +")");
         try {
-            Spider.create(new SGCCPageProcessor())
-                    .addUrl(SGCCPageProcessor.LIST_URL + SGCCPageProcessor.LIST_URL_PARAMETERS)
+            Spider.create(new WHZBTBPageProcessor())
+                    .addUrl(WHZBTBPageProcessor.LIST_URL + WHZBTBPageProcessor.DETAIL_URL_PARAMETER)
                     .addPipeline(projectPipeline)
                     .thread(1)
                     .setExitWhenComplete(true)

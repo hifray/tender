@@ -12,377 +12,122 @@ import java.util.Date;
  */
 public class ProjectDetailExcel implements java.io.Serializable {
 
-    /**
-     * Field serialVersionUID
-     */
     private static final long serialVersionUID = 4880061842792317921L;
 
-	/**
-     * Field tenderProjectName 招标项目名称
-     */
-    @Excel(name = "招标项目名称", height = 30, width = 40)
-    private String tenderProjectName;
+    @Excel(name = "项目名称", height = 30, width = 40)
+    private String projectName;
 
-    /**
-     * Field 报建名称
-     */
-    @Excel(name = " 报建名称", width = 40)
-    private String reportName;
+    @Excel(name = "项目编号", width = 30)
+    private String projectId;
 
-    /**
-     * Field tenderRegistrationNumber 招标登记编号
-     */
-    @Excel(name = "招标登记编号", width = 30)
-    private String tenderRegistrationNumber;
-
-    /**
-     * Field reportNumber 报建编号
-     */
-    @Excel(name = "报建编号", width = 30)
-    private String reportNumber;
-
-    /**
-     * Field tenderProjectDescription 招标内容说明
-     */
     @Excel(name = "招标内容说明", width = 50)
-    private String tenderProjectDescription;
+    private String projectDescription;
 
-    /**
-     * Field tenderContactPerson 招标人联系人
-     */
-    @Excel(name = "招标人联系人", width = 20)
-    private String tenderContactPerson;
+    @Excel(name = "联系人", width = 20)
+    private String contactPerson;
 
-    /**
-     * Field tenderContactPhone 招标人联系电话
-     */
-    @Excel(name = "招标人联系电话", width = 25)
-    private String tenderContactPhone;
+    @Excel(name = "联系电话", width = 25)
+    private String contactPhone;
 
-    /**
-     * Field tenderProxyContactPerson 招标人代理联系人
-     */
-    @Excel(name = "招标人代理联系人", width = 20)
-    private String tenderProxyContactPerson;
-
-    /**
-     * Field tenderProxyContactPhone 招标人代理联系人电话
-     */
-    @Excel(name = "招标人代理联系人电话", width = 25)
-    private String tenderProxyContactPhone;
-
-    /**
-     * Field announcementReleaseTime 公告发布日期
-     */
     @Excel(name = "公告发布日期", width = 20, databaseFormat = "yyyyMMddHHmmss", format = "yyyy年MM月dd日")
-    private Date announcementReleaseTime;
+    private Date tenderAnnounceTime;
 
-    /**
-     * Field tenderDeadline 报名截止日期
-     */
     @Excel(name = "报名截止日期", width = 20, databaseFormat = "yyyyMMddHHmmss", format = "yyyy年MM月dd日")
     private Date tenderDeadline;
 
-    /**
-     * Field remark 备注
-     */
+    @Excel(name = "来源网站", width = 25)
+    private String sourceWebsite;
+
     @Excel(name = "备注", width = 50)
     private String remark;
 
-    /**
-     * Method getTenderProjectName returns the tenderProjectName of this ProjectDetailExcel object.
-     *
-     *  Field tenderProjectName 招标项目名称
-     *
-     * @return the tenderProjectName (type String) of this ProjectDetailExcel object.
-     */
-    public String getTenderProjectName() {
-        return tenderProjectName;
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
-    /**
-     * Method setTenderProjectName sets the tenderProjectName of this ProjectDetailExcel object.
-     *
-     *  Field tenderProjectName 招标项目名称
-     *
-     * @param tenderProjectName the tenderProjectName of this ProjectDetailExcel object.
-     *
-     */
-    public void setTenderProjectName(String tenderProjectName) {
-        this.tenderProjectName = tenderProjectName;
+    public String getProjectName() {
+        return projectName;
     }
 
-    /**
-     * Method getReportName returns the reportName of this ProjectDetailExcel object.
-     *
-     *  Field 报建名称
-     *
-     * @return the reportName (type String) of this ProjectDetailExcel object.
-     */
-    public String getReportName() {
-        return reportName;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    /**
-     * Method setReportName sets the reportName of this ProjectDetailExcel object.
-     *
-     *  Field 报建名称
-     *
-     * @param reportName the reportName of this ProjectDetailExcel object.
-     *
-     */
-    public void setReportName(String reportName) {
-        this.reportName = reportName;
+    public String getProjectId() {
+        return projectId;
     }
 
-    /**
-     * Method getTenderRegistrationNumber returns the tenderRegistrationNumber of this ProjectDetailExcel object.
-     *
-     *  Field tenderRegistrationNumber 招标登记编号
-     *
-     * @return the tenderRegistrationNumber (type String) of this ProjectDetailExcel object.
-     */
-    public String getTenderRegistrationNumber() {
-        return tenderRegistrationNumber;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
-    /**
-     * Method setTenderRegistrationNumber sets the tenderRegistrationNumber of this ProjectDetailExcel object.
-     *
-     *  Field tenderRegistrationNumber 招标登记编号
-     *
-     * @param tenderRegistrationNumber the tenderRegistrationNumber of this ProjectDetailExcel object.
-     *
-     */
-    public void setTenderRegistrationNumber(String tenderRegistrationNumber) {
-        this.tenderRegistrationNumber = tenderRegistrationNumber;
+    public String getProjectDescription() {
+        return projectDescription;
     }
 
-    /**
-     * Method getReportNumber returns the reportNumber of this ProjectDetailExcel object.
-     *
-     *  Field reportNumber 报建编号
-     *
-     * @return the reportNumber (type String) of this ProjectDetailExcel object.
-     */
-    public String getReportNumber() {
-        return reportNumber;
+    public void setProjectDescription(String projectDescription) {
+        this.projectDescription = projectDescription;
     }
 
-    /**
-     * Method setReportNumber sets the reportNumber of this ProjectDetailExcel object.
-     *
-     *  Field reportNumber 报建编号
-     *
-     * @param reportNumber the reportNumber of this ProjectDetailExcel object.
-     *
-     */
-    public void setReportNumber(String reportNumber) {
-        this.reportNumber = reportNumber;
+    public String getContactPerson() {
+        return contactPerson;
     }
 
-    /**
-     * Method getTenderProjectDescription returns the tenderProjectDescription of this ProjectDetailExcel object.
-     *
-     *  Field tenderProjectDescription 招标内容说明
-     *
-     * @return the tenderProjectDescription (type String) of this ProjectDetailExcel object.
-     */
-    public String getTenderProjectDescription() {
-        return tenderProjectDescription;
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
     }
 
-    /**
-     * Method setTenderProjectDescription sets the tenderProjectDescription of this ProjectDetailExcel object.
-     *
-     *  Field tenderProjectDescription 招标内容说明
-     *
-     * @param tenderProjectDescription the tenderProjectDescription of this ProjectDetailExcel object.
-     *
-     */
-    public void setTenderProjectDescription(String tenderProjectDescription) {
-        this.tenderProjectDescription = tenderProjectDescription;
+    public String getContactPhone() {
+        return contactPhone;
     }
 
-    /**
-     * Method getTenderContactPerson returns the tenderContactPerson of this ProjectDetailExcel object.
-     *
-     *  Field tenderContactPerson 招标人联系人
-     *
-     * @return the tenderContactPerson (type String) of this ProjectDetailExcel object.
-     */
-    public String getTenderContactPerson() {
-        return tenderContactPerson;
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
     }
 
-    /**
-     * Method setTenderContactPerson sets the tenderContactPerson of this ProjectDetailExcel object.
-     *
-     *  Field tenderContactPerson 招标人联系人
-     *
-     * @param tenderContactPerson the tenderContactPerson of this ProjectDetailExcel object.
-     *
-     */
-    public void setTenderContactPerson(String tenderContactPerson) {
-        this.tenderContactPerson = tenderContactPerson;
+    public Date getTenderAnnounceTime() {
+        return tenderAnnounceTime;
     }
 
-    /**
-     * Method getTenderContactPhone returns the tenderContactPhone of this ProjectDetailExcel object.
-     *
-     *  Field tenderContactPhone 招标人联系电话
-     *
-     * @return the tenderContactPhone (type String) of this ProjectDetailExcel object.
-     */
-    public String getTenderContactPhone() {
-        return tenderContactPhone;
+    public void setTenderAnnounceTime(Date tenderAnnounceTime) {
+        this.tenderAnnounceTime = tenderAnnounceTime;
     }
 
-    /**
-     * Method setTenderContactPhone sets the tenderContactPhone of this ProjectDetailExcel object.
-     *
-     *  Field tenderContactPhone 招标人联系电话
-     *
-     * @param tenderContactPhone the tenderContactPhone of this ProjectDetailExcel object.
-     *
-     */
-    public void setTenderContactPhone(String tenderContactPhone) {
-        this.tenderContactPhone = tenderContactPhone;
-    }
-
-    /**
-     * Method getTenderProxyContactPerson returns the tenderProxyContactPerson of this ProjectDetailExcel object.
-     *
-     *  Field tenderProxyContactPerson 招标人代理联系人
-     *
-     * @return the tenderProxyContactPerson (type String) of this ProjectDetailExcel object.
-     */
-    public String getTenderProxyContactPerson() {
-        return tenderProxyContactPerson;
-    }
-
-    /**
-     * Method setTenderProxyContactPerson sets the tenderProxyContactPerson of this ProjectDetailExcel object.
-     *
-     *  Field tenderProxyContactPerson 招标人代理联系人
-     *
-     * @param tenderProxyContactPerson the tenderProxyContactPerson of this ProjectDetailExcel object.
-     *
-     */
-    public void setTenderProxyContactPerson(String tenderProxyContactPerson) {
-        this.tenderProxyContactPerson = tenderProxyContactPerson;
-    }
-
-    /**
-     * Method getTenderProxyContactPhone returns the tenderProxyContactPhone of this ProjectDetailExcel object.
-     *
-     *  Field tenderProxyContactPhone 招标人代理联系人电话
-     *
-     * @return the tenderProxyContactPhone (type String) of this ProjectDetailExcel object.
-     */
-    public String getTenderProxyContactPhone() {
-        return tenderProxyContactPhone;
-    }
-
-    /**
-     * Method setTenderProxyContactPhone sets the tenderProxyContactPhone of this ProjectDetailExcel object.
-     *
-     *  Field tenderProxyContactPhone 招标人代理联系人电话
-     *
-     * @param tenderProxyContactPhone the tenderProxyContactPhone of this ProjectDetailExcel object.
-     *
-     */
-    public void setTenderProxyContactPhone(String tenderProxyContactPhone) {
-        this.tenderProxyContactPhone = tenderProxyContactPhone;
-    }
-
-    /**
-     * Method getTenderDeadline returns the tenderDeadline of this ProjectDetailExcel object.
-     *
-     *  Field tenderDeadline 报名截止日期
-     *
-     * @return the tenderDeadline (type Date) of this ProjectDetailExcel object.
-     */
     public Date getTenderDeadline() {
         return tenderDeadline;
     }
 
-    /**
-     * Method setTenderDeadline sets the tenderDeadline of this ProjectDetailExcel object.
-     *
-     *  Field tenderDeadline 报名截止日期
-     *
-     * @param tenderDeadline the tenderDeadline of this ProjectDetailExcel object.
-     *
-     */
     public void setTenderDeadline(Date tenderDeadline) {
         this.tenderDeadline = tenderDeadline;
     }
 
-    /**
-     * Method getRemark returns the remark of this ProjectDetailExcel object.
-     *
-     *  Field remark 备注
-     *
-     * @return the remark (type String) of this ProjectDetailExcel object.
-     */
+    public String getSourceWebsite() {
+        return sourceWebsite;
+    }
+
+    public void setSourceWebsite(String sourceWebsite) {
+        this.sourceWebsite = sourceWebsite;
+    }
+
     public String getRemark() {
         return remark;
     }
 
-    /**
-     * Method setRemark sets the remark of this ProjectDetailExcel object.
-     *
-     *  Field remark 备注
-     *
-     * @param remark the remark of this ProjectDetailExcel object.
-     *
-     */
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
-    /**
-     * Method getAnnouncementReleaseTime returns the announcementReleaseTime of this ProjectDetailExcel object.
-     *
-     *  Field announcementReleaseTime 公告发布日期
-     *
-     * @return the announcementReleaseTime (type Date) of this ProjectDetailExcel object.
-     */
-    public Date getAnnouncementReleaseTime() {
-        return announcementReleaseTime;
-    }
-
-    /**
-     * Method setAnnouncementReleaseTime sets the announcementReleaseTime of this ProjectDetailExcel object.
-     *
-     *  Field announcementReleaseTime 公告发布日期
-     *
-     * @param announcementReleaseTime the announcementReleaseTime of this ProjectDetailExcel object.
-     *
-     */
-    public void setAnnouncementReleaseTime(Date announcementReleaseTime) {
-        this.announcementReleaseTime = announcementReleaseTime;
-    }
-
-    /**
-     * Method toString
-     * @return String
-     */
     @Override
     public String toString() {
         return "ProjectDetailExcel{" +
-                "tenderProjectName='" + tenderProjectName + '\'' +
-                ", reportName='" + reportName + '\'' +
-                ", tenderRegistrationNumber='" + tenderRegistrationNumber + '\'' +
-                ", reportNumber='" + reportNumber + '\'' +
-                ", tenderProjectDescription='" + tenderProjectDescription + '\'' +
-                ", tenderContactPerson='" + tenderContactPerson + '\'' +
-                ", tenderContactPhone='" + tenderContactPhone + '\'' +
-                ", tenderProxyContactPerson='" + tenderProxyContactPerson + '\'' +
-                ", tenderProxyContactPhone='" + tenderProxyContactPhone + '\'' +
-                ", announcementReleaseTime=" + announcementReleaseTime +
+                "projectName='" + projectName + '\'' +
+                ", projectId='" + projectId + '\'' +
+                ", projectDescription='" + projectDescription + '\'' +
+                ", contactPerson='" + contactPerson + '\'' +
+                ", contactPhone='" + contactPhone + '\'' +
+                ", tenderAnnounceTime=" + tenderAnnounceTime +
                 ", tenderDeadline=" + tenderDeadline +
+                ", sourceWebsite='" + sourceWebsite + '\'' +
                 ", remark='" + remark + '\'' +
                 '}';
     }

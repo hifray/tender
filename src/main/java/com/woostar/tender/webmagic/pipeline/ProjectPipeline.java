@@ -55,7 +55,7 @@ public class ProjectPipeline implements Pipeline {
             ProjectDetail projectDetail = resultItems.get(BasePageProcessor.FIELD_KEY);
             if (projectDetail != null) {
                 ProjectDetailExample sqlExample = new ProjectDetailExample();
-                sqlExample.createCriteria().andProjectIdEqualTo(projectDetail.getProjectId());
+                sqlExample.createCriteria().andProjectNameEqualTo(projectDetail.getProjectName());
                 if (iProjectDetailMapper.selectByExample(sqlExample).size() == 0) {
                     // 数据库中无此条记录时存储
                     projectDetail.setCreateTime(new Date());

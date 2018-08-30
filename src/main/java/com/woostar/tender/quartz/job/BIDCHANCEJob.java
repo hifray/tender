@@ -2,23 +2,22 @@ package com.woostar.tender.quartz.job;
 
 import com.woostar.tender.common.util.DateTimeUtil;
 import com.woostar.tender.webmagic.pipeline.ProjectPipeline;
-import com.woostar.tender.webmagic.processor.ProjectPageProcessor;
+import com.woostar.tender.webmagic.processor.BIDCHANCEPageProcessor;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import us.codecraft.webmagic.Spider;
 
 /**
- * Class ProjectJob
+ * Class BIDCHANCEJob
  *
  * @author huangshuo
- * Created on 2018-06-01
+ * Created on 2018-07-16
  */
-public class ProjectJob extends BaseJob {
+public class BIDCHANCEJob extends BaseJob {
 
     /**
      * Field projectPipeline
-     * 注入ProjectPipeline(Job类必须有默认的无参构造器，因而此处不可用构造器注入，否则Job将无法实例化)
      */
     @Autowired
     private ProjectPipeline projectPipeline;
@@ -33,10 +32,12 @@ public class ProjectJob extends BaseJob {
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         LOGGER.info("定时任务已启动("+ DateTimeUtil.dateToString(jobExecutionContext.getFireTime(), DateTimeUtil.DEFAULT_FORMAT) +")");
         try {
-            Spider.create(new ProjectPageProcessor())
-                    .addUrl(ProjectPageProcessor.LIST_URL + ProjectPageProcessor.DETAIL_URL_PARAMETER)
+            Spider.create(new BIDCHANCEPageProcessor())
+                    // 发送登陆请求
+                    .addUrl("http://www.bidchance.com/logon.do?pwd=wxdq1234&userid=whwxdq")
+                    .addUrl(BIDCHANCEPageProcessor.LIST_URL)
                     .addPipeline(projectPipeline)
-                    .thread(5)
+                    .thread(1)
                     .setExitWhenComplete(true)
                     .run();
         } catch (Exception e) {
